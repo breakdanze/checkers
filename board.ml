@@ -15,6 +15,7 @@ module type BoardSig = sig
   type turn
   val rows: int ref
   val init: int -> t
+  val to_list: t -> (int * string) list
   val movable: t -> pos list
   val is_valid: t -> pos -> pos -> bool
   val move: t -> pos -> pos -> unit
@@ -82,8 +83,15 @@ module Board= struct
     initPieces a 0 3 5 r r
 
   let to_list (b:t) =
-    failwith "unimplemented"
-
+    let rec toList b i r acc =
+      if i < r * r then
+        match b.(i) with
+        | None -> toList b (i+1) r ((i,"Space") :: acc)
+        | Some p -> (match P.side_of p with
+            |Red -> toList b (i+1) r ((i, if P.is_king p then "Red King" else "Red") :: acc)
+            |Black -> toList b (i+1) r ((i, if P.is_king p then "Black King" else "Black") :: acc)
+          ) else acc in
+    List.rev (toList b 0 (!rows) [])
 
   let movable b = 
     failwith "unimplemented"

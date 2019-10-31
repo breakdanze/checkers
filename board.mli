@@ -36,6 +36,9 @@ module type BoardSig = sig
   (** [init] is the init state of board.*)
   val init: int -> t
 
+  (** [to_list b] is the list representation of [b].*)
+  val to_list: t -> (int * string) list
+
   (** [movable b] is the list of movable positions on board [b].*)
   val movable: t -> pos list
 
