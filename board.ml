@@ -61,36 +61,43 @@ module Board= struct
   let rec initPieces a i num1 num2 num3 col= 
     if i < num1 * col then 
       match (i / col) mod 2 with
-      | 0 -> a.(i) <- (if i mod 2 = 0 then None else Some (P.create P.Red false));
+      | 0 -> a.(i) <- (if i mod 2 = 0 then None else Some (P.create Red false));
         initPieces a (i+1) num1 num2 num3 col
-      | 1 -> a.(i) <- (if i mod 2 = 1 then None else Some (P.create P.Red false));
+      | 1 -> a.(i) <- (if i mod 2 = 1 then None else Some (P.create Red false));
         initPieces a (i+1) num1 num2 num3 col
       | _ -> failwith "How could int mod 2 be greater than 2?"
     else if i >= num1 * col && i < num2 * col then 
       (a.(i) <- None; initPieces a (i+1) num1 num2 num3 col)
     else if i >= num2 * col && i < num3 * col then
       match (i / col) mod 2 with
-      | 0 -> a.(i) <- (if i mod 2 = 0 then None else Some (P.create P.Black false));
+      | 0 -> a.(i) <- (if i mod 2 = 0 then None else Some (P.create Black false));
         initPieces a (i+1) num1 num2 num3 col
-      | 1 -> a.(i) <- (if i mod 2 = 1 then None else Some (P.create P.Black false));
+      | 1 -> a.(i) <- (if i mod 2 = 1 then None else Some (P.create Black false));
         initPieces a (i+1) num1 num2 num3 col
       | _ -> failwith "How could int mod 2 be greater than 2?"
+    else if i = num3 * col then (a.(i) <- Some (P.create Black false);a)
     else a
 
   let init r = 
     rows:= r;
-    let a = Array.make 64 None in
+    let a = Array.make (r*r+1) None in
     initPieces a 0 3 5 r r
 
   let to_list (b:t) =
     let rec toList b i r acc =
       if i < r * r then
         match b.(i) with
-        | None -> toList b (i+1) r ((i,"Space") :: acc)
+        | None -> toList b (i+1) r ((i+1,"Space") :: acc)
         | Some p -> (match P.side_of p with
-            |Red -> toList b (i+1) r ((i, if P.is_king p then "Red King" else "Red") :: acc)
-            |Black -> toList b (i+1) r ((i, if P.is_king p then "Black King" else "Black") :: acc)
-          ) else acc in
+            |Red -> toList b (i+1) r ((i+1, if P.is_king p then "Red King" else "Red") :: acc)
+            |Black -> toList b (i+1) r ((i+1, if P.is_king p then "Black King" else "Black") :: acc)
+          ) else 
+        match b.(r*r) with
+        |None -> (0, "WTF") ::acc
+        |Some p -> (match P.side_of p with 
+            |Red -> (0,"Current turn is Red") :: acc
+            |Black -> (0, "Current turn is Black") :: acc)
+    in
     List.rev (toList b 0 (!rows) [])
 
   let movable b = 
