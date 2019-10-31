@@ -9,3 +9,24 @@ let rec statechanger state =
      match Command.parse written with 
   *)
   failwith "Unimplemented"
+
+  
+(** [begin_game f] begins the game with given settings [f]. *)
+(*
+let begin_game f = 
+
+
+*)
+
+(** [main ()] asks for settings for the game to play, then starts it *)
+(* 
+let main () =
+  
+
+
+*)
+
+(* Execute the game *)
+(* 
+let () = main () 
+*)
