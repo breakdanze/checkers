@@ -23,15 +23,18 @@ end
 module type BoardSig = sig
   type t
 
-  module Piece : PieceSig
+  module P : PieceSig
   (** [pos] is the index for the board.*)
   type pos
 
   (** [turn] indicates the current player's side.*)
   type turn
 
+  (** [rows] is the # of rows and columns of the board.*)
+  val rows: int ref
+
   (** [init] is the init state of board.*)
-  val init: t
+  val init: int -> t
 
   (** [movable b] is the list of movable positions on board [b].*)
   val movable: t -> pos list
@@ -53,6 +56,4 @@ module type BoardSig = sig
   val win: t -> bool
 end
 
-module type BoardMaker = functor (P:PieceSig) -> BoardSig with module Piece = P
-
-module Board : BoardMaker
+module Board : BoardSig
