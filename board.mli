@@ -24,8 +24,6 @@ module type BoardSig = sig
   type t
 
   module P : PieceSig
-  (** [pos] is the index for the board.*)
-  type pos
 
   (** [turn] indicates the current player's side.*)
   type turn
@@ -40,17 +38,14 @@ module type BoardSig = sig
   val to_list: t -> (int * string) list
 
   (** [movable b] is the list of movable positions on board [b].*)
-  val movable: t -> pos list
+  val movable: t -> int list
 
   (** [is_valid b pos1 pos2] is true iff [pos2] is a valid move of the piece at 
       [pos1] on board [b].*)
-  val is_valid: t -> pos -> pos -> bool
+  val is_valid: t -> int -> int -> bool
 
   (** [move pos1 pos2] moves the piece at [pos1] to [pos2] on board [b].*)
-  val move: t -> pos -> pos -> unit
-
-  (** [capture b pos] captures the piece at [pos] on board [b].*)
-  val capture: t -> pos -> unit
+  val move: t -> int -> int -> unit
 
   (** [current_turn b] is the current turn of [b].*)
   val current_turn: t -> turn
