@@ -11,15 +11,13 @@ end
 module type BoardSig = sig
   type t
   module P : PieceSig
-  type pos
   type turn
   val rows: int ref
   val init: int -> t
   val to_list: t -> (int * string) list
-  val movable: t -> pos list
-  val is_valid: t -> pos -> pos -> bool
-  val move: t -> pos -> pos -> unit
-  val capture: t -> pos -> unit
+  val movable: t -> int list
+  val is_valid: t -> int -> int -> bool
+  val move: t -> int -> int -> unit
   val current_turn: t -> turn
   val win: t -> bool
 end
@@ -50,8 +48,6 @@ module Board= struct
   type t = P.t option array
 
   type turn = P.side
-
-  type pos = int
 
   let rows = ref 8
 
@@ -104,13 +100,16 @@ module Board= struct
     failwith "unimplemented"
 
   let is_valid b p1 p2=
-    failwith "unimplemented"
+    true
 
   let move b p1 p2 =
-    failwith "unimplemented"
-
-  let capture b p1 =
-    failwith "unimplemented"
+    let p1 = p1 - 1 in
+    let p2 = p2 - 1 in
+    if is_valid b p1 p2 then (
+      if p2/(!rows) - p1 / (!rows) = 1 || p1/(!rows) - p2 / (!rows) = 1
+      then (b.(p2) <- b.(p1); b.(p1) <- None;)
+      else (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
+    ) else print_string "invalid";()
 
   let current_turn b =
     failwith "unimplemented"
