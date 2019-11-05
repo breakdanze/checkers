@@ -40,12 +40,19 @@ module type BoardSig = sig
   (** [movable b] is the list of movable positions on board [b].*)
   val movable: t -> int list
 
-  (** [is_valid b pos1 pos2] is true iff [pos2] is a valid move of the piece at 
+  (** [is_valid_move b pos1 pos2] is true iff [pos2] is a valid move of the piece at 
       [pos1] on board [b].*)
-  val is_valid: t -> int -> int -> bool
+  val is_valid_move: t -> int -> int -> bool
+
+  (** [is_valid_jump b pos1 pos2] is true iff [pos2] is a valid jump of the piece at 
+      [pos1] on board [b].*)
+  val is_valid_jump: t -> int -> int -> bool
 
   (** [move pos1 pos2] moves the piece at [pos1] to [pos2] on board [b].*)
   val move: t -> int -> int -> unit
+
+  (** [jump pos1 pos2] jumps the piece at [pos1] to [pos2] on board [b].*)
+  val jump: t -> int -> int -> unit
 
   (** [current_turn b] is the current turn of [b].*)
   val current_turn: t -> turn
