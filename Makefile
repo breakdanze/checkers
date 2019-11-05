@@ -30,3 +30,6 @@ docs-private: build
 
 clean:
 	ocamlbuild -clean
+
+play: 
+	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
