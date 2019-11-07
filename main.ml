@@ -4,7 +4,7 @@ open Board
 open Command
 
 
-let rec change_state state =
+let rec change_state board =
   (* let player = state.player in *)
   (* print_endline ("It is " ^ player ^ "'s turn."); *)
   (* print_string ("> "); *)
@@ -12,8 +12,9 @@ let rec change_state state =
   (* try 
      match Command.parse written with 
   *)
-  failwith "unimplemented"
-(* 
+  let board_disp = display board in 
+  print_string "\n"^desc^"\n"
+let 
   try (
     | Move -> ()
     | Quit -> ()
@@ -25,7 +26,7 @@ let rec change_state state =
   | Empty -> ( 
       print_string "\n\nEmpty command. Try again."
     )
-    *)
+
 
 (** [begin_game f] begins the game with given settings [f]. *)
 (*
