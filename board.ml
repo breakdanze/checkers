@@ -79,7 +79,7 @@ module Board= struct
   let init r = 
     rows:= r;
     let a = Array.make (r*r+1) None in
-    initPieces a 0 3 5 r r
+    initPieces a 0 ((r-2)/2) ((r+2)/2) r r
 
   let to_list (b:t) =
     let rec toList b i r acc =
