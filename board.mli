@@ -54,6 +54,9 @@ module type BoardSig = sig
   (** [current_turn b] is the current turn of [b].*)
   val current_turn: t -> string
 
+  (** [change_turn b] changes the current turn of [b] to the opposite side.*)
+  val change_turn: t -> unit
+
   (** [win b] is true iff one side of [b] has won.*)
   val win: t -> bool
 end

@@ -20,6 +20,7 @@ module type BoardSig = sig
   val move: t -> int -> int -> unit
   val jump: t -> int -> int -> unit
   val current_turn: t -> string
+  val change_turn: t -> unit
   val win: t -> bool
 end
 
@@ -125,6 +126,12 @@ module Board= struct
     | Some p -> (match (P.side_of p) with
         | Red -> "Red"
         | Black -> "Black")
+
+  let change_turn b =
+    match current_turn b with
+    | "Black" -> b.(!rows * !rows) <- Some (P.create Red false)
+    | "Red" -> b.(!rows * !rows) <- Some (P.create Black false)
+    | _ -> failwith "WHAT"
 
   let win b =
     failwith "unimplemented"
