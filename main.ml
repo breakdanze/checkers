@@ -1,3 +1,5 @@
+open Board
+
 (** statechanger recursively changes the state and progresses the game
     based on user input *)
 let rec statechanger state =
@@ -32,7 +34,7 @@ let () = main ()
 *)
 
 (** display function*)
-(*let display b =
+let display b =
   let rec displaylst = function
     |[] -> ()
     |[(0,_)] -> ()
@@ -44,4 +46,4 @@ let () = main ()
        |"Red King" -> print_string " RK"; displaylst t
        |"Black King" -> print_string " BK"; displaylst t
        | _ -> failwith "WHAT") in
-  displaylst (Board.to_list b)*)
+  displaylst (Board.to_list b)
