@@ -25,9 +25,6 @@ module type BoardSig = sig
 
   module P : PieceSig
 
-  (** [turn] indicates the current player's side.*)
-  type turn
-
   (** [rows] is the # of rows and columns of the board.*)
   val rows: int ref
 
@@ -55,7 +52,10 @@ module type BoardSig = sig
   val jump: t -> int -> int -> unit
 
   (** [current_turn b] is the current turn of [b].*)
-  val current_turn: t -> turn
+  val current_turn: t -> string
+
+  (** [change_turn b] changes the current turn of [b] to the opposite side.*)
+  val change_turn: t -> unit
 
   (** [win b] is true iff one side of [b] has won.*)
   val win: t -> bool

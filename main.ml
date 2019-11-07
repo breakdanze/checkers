@@ -41,8 +41,15 @@ let rec change_state (board:Board.t) : unit =
     let input_parsed = parse user_input in 
     match input_parsed with 
     | Move move_phrase -> ()
-    | Quit -> ()
-    | _ -> ()
+    | Quit -> (
+        print_string "\nQuitting...\n\n"; 
+        exit 0 ) 
+    | Help -> (
+        print_string "\nHelpful message!\nPress enter to continue.\n";
+        match read_line () with 
+        | _ -> change_state board
+      )
+
   )
   with
   | Malformed -> (
@@ -65,3 +72,6 @@ let main () =
   match read_line () with 
   | exception End_of_file -> () 
   | mode -> play_game mode
+
+(* Execute the game engine. *)
+let () = main ()
