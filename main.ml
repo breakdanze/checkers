@@ -54,10 +54,12 @@ let rec change_state (board:Board.t) : unit =
   )
   with
   | Malformed -> (
-      print_string "\n\nMalformed command. Try again."
+      print_string "\n\nMalformed command. Try again.";
+      change_state board
     )
   | Empty -> ( 
-      print_string "\n\nEmpty command. Try again."
+      print_string "\n\nEmpty command. Try again.";
+      change_state board
     )
 
 let play_game (mode:string) : unit= 
