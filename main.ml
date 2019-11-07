@@ -2,7 +2,11 @@ open Board
 
 (** statechanger recursively changes the state and progresses the game
     based on user input *)
-let rec statechanger state =
+open Board
+open Command
+
+
+let rec change_state board =
   (* let player = state.player in *)
   (* print_endline ("It is " ^ player ^ "'s turn."); *)
   (* print_string ("> "); *)
@@ -10,7 +14,20 @@ let rec statechanger state =
   (* try 
      match Command.parse written with 
   *)
-  failwith "Unimplemented"
+  let board_disp = display board in 
+  print_string "\n"^desc^"\n"
+let 
+  try (
+    | Move -> ()
+    | Quit -> ()
+  )
+  with
+  | Malformed -> (
+      print_string "\n\nMalformed command. Try again."
+    )
+  | Empty -> ( 
+      print_string "\n\nEmpty command. Try again."
+    )
 
 
 (** [begin_game f] begins the game with given settings [f]. *)
