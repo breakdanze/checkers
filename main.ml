@@ -72,3 +72,6 @@ let main () =
   match read_line () with 
   | exception End_of_file -> () 
   | mode -> play_game mode
+
+(* Execute the game engine. *)
+let () = main ()
