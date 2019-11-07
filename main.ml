@@ -35,12 +35,13 @@ let rec change_state (board:Board.t) : unit =
      match Command.parse written with 
   *)
   let _ = display board in 
-  print_string "\n"; 
+  print_string ("\n"^Board.current_turn board^"'s turn.\n");
+  print_string ("Please enter a command.\n") ;
   try (
     let user_input = read_line () in 
     let input_parsed = parse user_input in 
     match input_parsed with 
-    | Move move_phrase -> ()
+    | Move move_phrase -> change_state board
     | Quit -> (
         print_string "\nQuitting...\n\n"; 
         exit 0 ) 
@@ -53,10 +54,12 @@ let rec change_state (board:Board.t) : unit =
   )
   with
   | Malformed -> (
-      print_string "\n\nMalformed command. Try again."
+      print_string "\n\nMalformed command. Try again.";
+      change_state board
     )
   | Empty -> ( 
-      print_string "\n\nEmpty command. Try again."
+      print_string "\n\nEmpty command. Try again.";
+      change_state board
     )
 
 let play_game (mode:string) : unit= 
