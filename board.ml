@@ -11,7 +11,6 @@ end
 module type BoardSig = sig
   type t
   module P : PieceSig
-  type turn
   val rows: int ref
   val init: int -> t
   val to_list: t -> (int * string) list
@@ -20,7 +19,7 @@ module type BoardSig = sig
   val is_valid_jump: t -> int -> int -> bool
   val move: t -> int -> int -> unit
   val jump: t -> int -> int -> unit
-  val current_turn: t -> turn
+  val current_turn: t -> string
   val win: t -> bool
 end
 
@@ -49,7 +48,6 @@ module Board= struct
 
   type t = P.t option array
 
-  type turn = P.side
 
   let rows = ref 8
 
@@ -122,7 +120,11 @@ module Board= struct
     else print_string "invalid";()
 
   let current_turn b =
-    failwith "unimplemented"
+    match b.(!rows * !rows) with
+    | None -> failwith "What"
+    | Some p -> (match (P.side_of p) with
+        | Red -> "Red"
+        | Black -> "Black")
 
   let win b =
     failwith "unimplemented"
