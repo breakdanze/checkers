@@ -33,3 +33,6 @@ clean:
 
 play: 
 	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
+
+zip:
+	zip checkers.zip *.ml *.json _tags Makefile
