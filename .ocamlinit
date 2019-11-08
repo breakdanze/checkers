@@ -2,3 +2,5 @@
 #directory "_build";;
 #load "board.cmo";;
 #load "command.cmo";;
+open Board
+#use "main.ml";;
