@@ -1,0 +1,8 @@
+1. Download and unzip checkers.zip.
+2. Navigate to the checkers directory in the terminal.
+3. Type make build in the terminal.
+3. Type make play in the terminal.
+4. Type 1p or 2p.
+5. You can now use the following commands:
+move - The system to interpret this does not exist yet but the code to move exists and it is recognized as a valid command.
+quit - Exit the system.
