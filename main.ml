@@ -1,6 +1,3 @@
- 
-(** statechanger recursively changes the state and progresses the game
-    based on user input *)
 open Board
 open Command
 
@@ -27,13 +24,6 @@ let display b =
 
 
 let rec change_state (board:Board.t) : unit =
-  (* let player = state.player in *)
-  (* print_endline ("It is " ^ player ^ "'s turn."); *)
-  (* print_string ("> "); *)
-  (* let written = read_line () in *)
-  (* try 
-     match Command.parse written with 
-  *)
   let _ = display board in 
   print_string ("\n"^Board.current_turn board^"'s turn.\n");
   print_string ("Please enter a command.\n") ;
