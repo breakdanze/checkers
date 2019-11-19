@@ -228,10 +228,10 @@ module Board= struct
         | P.Black -> 2
       ) in
       match (p2 - p1) with
-      | i when i = - !rows - 1 -> if (side = 1 && P.is_king p = false) then false else check b 1 p1 1 side
-      | i when i = - !rows + 1 -> if (side = 1 && P.is_king p = false) then false else check b 2 p1 1 side
-      | i when i = !rows + 1 -> if (side = 2 && P.is_king p = false) then false else check b 3 p1 1 side
-      | i when i = !rows - 1 -> if (side = 2 && P.is_king p = false) then false else check b 4 p1 1 side
+      | i when i = - !rows - 1 -> if (side = 1 && P.is_king p = false) then false else check b 1 (p1 - 1) 1 side
+      | i when i = - !rows + 1 -> if (side = 1 && P.is_king p = false) then false else check b 2 (p1 - 1) 1 side
+      | i when i = !rows + 1 -> if (side = 2 && P.is_king p = false) then false else check b 3 (p1 - 1) 1 side
+      | i when i = !rows - 1 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 1 side
       | _ -> false
 
   let is_valid_jump b p1 p2=
@@ -243,10 +243,10 @@ module Board= struct
         | P.Black -> 2
       ) in
       match (p2 - p1) with
-      | i when i = - 2 * !rows - 2 -> if (side = 1 && P.is_king p = false) then false else check b 1 p1 2 side
-      | i when i = - 2 * !rows + 2 -> if (side = 1 && P.is_king p = false) then false else check b 2 p1 2 side
-      | i when i = 2 * !rows + 2 -> if (side = 2 && P.is_king p = false) then false else check b 3 p1 2 side
-      | i when i = 2 * !rows - 2 -> if (side = 2 && P.is_king p = false) then false else check b 4 p1 2 side
+      | i when i = - 2 * !rows - 2 -> if (side = 1 && P.is_king p = false) then false else check b 1 (p1 - 1) 2 side
+      | i when i = - 2 * !rows + 2 -> if (side = 1 && P.is_king p = false) then false else check b 2 (p1 - 1) 2 side
+      | i when i = 2 * !rows + 2 -> if (side = 2 && P.is_king p = false) then false else check b 3 (p1 - 1) 2 side
+      | i when i = 2 * !rows - 2 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 2 side
       | _ -> false
 
   let move b p1 p2 =
