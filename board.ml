@@ -15,7 +15,7 @@ module type BoardSig = sig
   val init: int -> t
   val to_list: t -> (int * string) list
   val check: t -> int -> int -> int -> int -> bool
-  val movable: t -> int list list
+  val movable: t -> int list * int list
   val is_valid_move: t -> int -> int -> bool
   val is_valid_jump: t -> int -> int -> bool
   val move: t -> int -> int -> unit
@@ -177,7 +177,7 @@ module Board= struct
 
   let movable b = 
     let rec checkboard i lst1 lst2= 
-      if i = !rows * !rows then [lst1; lst2] else
+      if i = !rows * !rows then (lst1, lst2) else
         match b.(i) with
         | None -> checkboard (i+1) lst1 lst2
         | Some p -> if (P.side_of (getState b (!rows * !rows)) = P.side_of p) then (
@@ -252,9 +252,8 @@ module Board= struct
   let move b p1 p2 = 
     let lst = (
       match movable b with
-      | [l1; []] -> l1
-      | [l1; l2] -> []
-      | _ -> failwith "Something went wrong"
+      | (l1, []) -> l1
+      | (l1, l2) -> []
     ) in
     if is_valid_move b p1 p2 && (List.mem p1 lst) then (
       let p1 = p1 - 1 in
@@ -266,8 +265,7 @@ module Board= struct
   let jump b p1 p2 =
     let lst = (
       match movable b with
-      | [l1; l2] -> l2
-      | _ -> failwith "Something went wrong"
+      | (l1, l2) -> l2
     ) in
     if is_valid_jump b p1 p2 && (List.mem p1 lst) then 
       let p1 = p1 -1 in
@@ -290,6 +288,6 @@ module Board= struct
 
   let win b =
     match movable b with
-    | [] -> change_turn b; print_string (current_turn b); print_string " wins"; true
+    | ([], []) -> change_turn b; print_string (current_turn b); print_string " wins"; true
     | _ -> false
 end
