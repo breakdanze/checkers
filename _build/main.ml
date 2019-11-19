@@ -1,7 +1,7 @@
 open Board
 open Command
 
-(** display function *)
+(** display function*)
 let display b =
   let rec displaylst = function
     |[] -> ()
