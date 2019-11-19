@@ -109,6 +109,7 @@ module Board= struct
   (* d stands for direction, 1 for left up, 2 for right up, 3 for right down,
        4 for left down. s for steps, jump takes 2, move takes 1.
        side represents side, 1 for red, 2 for black.*)
+  (* input takes in ACTUAL POSITION (starting on 0)*)
   let check b d p s side=
     let p= p+ 1 in
     match d, (p - 1) / !rows, p mod !rows, s with
@@ -219,6 +220,7 @@ module Board= struct
     | [l1; l2] -> l2
     | _ -> failwith "Something went wrong"
 
+  (* p1 p2 are DISPLAY POSITIONS (starting on 1)*)
   let is_valid_move b p1 p2=
     match b.(p1 - 1) with
     | None -> false
@@ -234,6 +236,7 @@ module Board= struct
       | i when i = !rows - 1 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 1 side
       | _ -> false
 
+  (* p1 p2 are DISPLAY POSITION*)
   let is_valid_jump b p1 p2=
     match b.(p1 - 1) with
     | None -> false
@@ -249,16 +252,16 @@ module Board= struct
       | i when i = 2 * !rows - 2 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 2 side
       | _ -> false
 
+  (* p1 p2 are DISPLAY POSITION*)
   let move b p1 p2 =
-
     if is_valid_move b p1 p2 && (List.mem p1 (movable b)) then (
       let p1 = p1 - 1 in
       let p2 = p2 - 1 in
       (b.(p2) <- b.(p1); b.(p1) <- None;)
     ) else print_string "invalid";()
 
+  (* p1 p2 are DISPLAY POSITION*)
   let jump b p1 p2 =
-
     if is_valid_jump b p1 p2 && (List.mem p1 (movable b)) then 
       let p1 = p1 -1 in
       let p2 = p2 -1 in
