@@ -34,6 +34,10 @@ module type BoardSig = sig
   (** [to_list b] is the list representation of [b].*)
   val to_list: t -> (int * string) list
 
+  (** [check b d p s side] is true iff [p] with side [side] is possible to be moved towards [d] in
+      [s] steps.*)
+  val check: t -> int -> int -> int -> int -> bool
+
   (** [movable b] is the list of movable positions on board [b].*)
   val movable: t -> int list
 

@@ -14,6 +14,7 @@ module type BoardSig = sig
   val rows: int ref
   val init: int -> t
   val to_list: t -> (int * string) list
+  val check: t -> int -> int -> int -> int -> bool
   val movable: t -> int list
   val is_valid_move: t -> int -> int -> bool
   val is_valid_jump: t -> int -> int -> bool
@@ -104,8 +105,6 @@ module Board= struct
     | Some p -> p
     | None -> failwith "No piece at location"
 
-  (** [check b d p s side] is true iff [p] with side [side] is possible to be moved towards [d] in
-      [s] steps.*)
   (* d stands for direction, 1 for left up, 2 for right up, 3 for right down,
        4 for left down. s for steps, jump takes 2, move takes 1.
        side represents side, 1 for red, 2 for black.*)
