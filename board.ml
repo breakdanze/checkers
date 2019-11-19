@@ -15,7 +15,7 @@ module type BoardSig = sig
   val init: int -> t
   val to_list: t -> (int * string) list
   val check: t -> int -> int -> int -> int -> bool
-  val movable: t -> int list
+  val movable: t -> int list list
   val is_valid_move: t -> int -> int -> bool
   val is_valid_jump: t -> int -> int -> bool
   val move: t -> int -> int -> unit
@@ -214,10 +214,7 @@ module Board= struct
               )
           )else checkboard (i+1) lst1 lst2 in
 
-    match checkboard 0 [] [] with
-    | [l1; []] -> l1
-    | [l1; l2] -> l2
-    | _ -> failwith "Something went wrong"
+    checkboard 0 [] []
 
   (* p1 p2 are DISPLAY POSITIONS (starting on 1)*)
   let is_valid_move b p1 p2=
@@ -252,8 +249,14 @@ module Board= struct
       | _ -> false
 
   (* p1 p2 are DISPLAY POSITION*)
-  let move b p1 p2 =
-    if is_valid_move b p1 p2 && (List.mem p1 (movable b)) then (
+  let move b p1 p2 = 
+    let lst = (
+      match movable b with
+      | [l1; []] -> l1
+      | [l1; l2] -> []
+      | _ -> failwith "Something went wrong"
+    ) in
+    if is_valid_move b p1 p2 && (List.mem p1 lst) then (
       let p1 = p1 - 1 in
       let p2 = p2 - 1 in
       (b.(p2) <- b.(p1); b.(p1) <- None;)
@@ -261,7 +264,12 @@ module Board= struct
 
   (* p1 p2 are DISPLAY POSITION*)
   let jump b p1 p2 =
-    if is_valid_jump b p1 p2 && (List.mem p1 (movable b)) then 
+    let lst = (
+      match movable b with
+      | [l1; l2] -> l2
+      | _ -> failwith "Something went wrong"
+    ) in
+    if is_valid_jump b p1 p2 && (List.mem p1 lst) then 
       let p1 = p1 -1 in
       let p2 = p2 -1 in
       (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)

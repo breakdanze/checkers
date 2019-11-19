@@ -38,8 +38,9 @@ module type BoardSig = sig
       [s] steps.*)
   val check: t -> int -> int -> int -> int -> bool
 
-  (** [movable b] is the list of movable positions on board [b].*)
-  val movable: t -> int list
+  (** [movable b] is the list containing two lists, one for movable positions on board [b],
+      the other for jumpable list.*)
+  val movable: t -> int list list
 
   (** [is_valid_move b pos1 pos2] is true iff [pos2] is a valid move of the piece at 
       [pos1] on board [b].*)
