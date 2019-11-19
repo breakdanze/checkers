@@ -250,16 +250,18 @@ module Board= struct
       | _ -> false
 
   let move b p1 p2 =
-    let p1 = p1 - 1 in
-    let p2 = p2 - 1 in
+
     if is_valid_move b p1 p2 && (List.mem p1 (movable b)) then (
+      let p1 = p1 - 1 in
+      let p2 = p2 - 1 in
       (b.(p2) <- b.(p1); b.(p1) <- None;)
     ) else print_string "invalid";()
 
   let jump b p1 p2 =
-    let p1 = p1 -1 in
-    let p2 = p2 -1 in
+
     if is_valid_jump b p1 p2 && (List.mem p1 (movable b)) then 
+      let p1 = p1 -1 in
+      let p2 = p2 -1 in
       (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
     else print_string "invalid";()
 
