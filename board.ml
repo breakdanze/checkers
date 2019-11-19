@@ -97,26 +97,169 @@ module Board= struct
     in
     List.rev (toList b 0 (!rows) [])
 
+  (** [getState b i] is the piece at location [i].
+      Throws exception if no piece is there.*)
+  let getState b i =
+    match b.(i) with
+    | Some p -> p
+    | None -> failwith "No piece at location"
+
+  (** [check b d p s side] is true iff [p] with side [side] is possible to be moved towards [d] in
+      [s] steps.*)
+  (* d stands for direction, 1 for left up, 2 for right up, 3 for right down,
+       4 for left down. s for steps, jump takes 2, move takes 1.
+       side represents side, 1 for red, 2 for black.*)
+  let check b d p s side=
+    let p= p+ 1 in
+    match d, (p - 1) / !rows, p mod !rows, s with
+    | 1, 0, _, _
+    | 1, _, 1, _
+    | 1, 1, _, 2
+    | 1, _, 2, 2 -> false
+    | 2, 0, _, _
+    | 2, _, 0, _
+    | 2, 1, _, 2 -> false
+    | 2, _, i, 2 when i = !rows - 1 -> false
+    | 3, i, _, _ when i = !rows - 1 -> false
+    | 3, _, 0, _ -> false
+    | 3, i, _, 2 when i = !rows - 2 -> false
+    | 3, _, i, 2 when i = !rows - 1 -> false
+    | 4, i, _, _ when i = !rows - 1 -> false
+    | 4, _, 1, _ -> false
+    | 4, i, _, 2 when i = !rows - 2 -> false
+    | 4, _, 2, 2 -> false
+    | 1, _, _, 1 -> (
+        match b.(p - !rows - 1 -1) with
+        | None -> true
+        | _ -> false
+      )
+    | 1, _, _, 2 -> (
+        match b.(p - !rows - 1 - 1), b.(p - (2 * !rows) - 2 - 1) with
+        | None, _ -> false
+        | Some piece, Some piece2 -> false
+        | Some piece, None -> P.side_of piece = (if side = 1 then P.Black else P.Red)
+      )
+    | 2, _, _, 1 ->  (
+        match b.(p - !rows + 1 - 1) with
+        | None -> true
+        | _ -> false
+      )
+    | 2, _, _, 2 -> (
+        match b.(p - !rows + 1 - 1), b.(p - (2 * !rows) + 2 - 1) with
+        | None, _ -> false
+        | Some piece, Some piece2 -> false
+        | Some piece, None -> P.side_of piece = (if side = 1 then P.Black else P.Red)
+      )
+    | 3, _, _, 1 -> (
+        match b.(p + !rows + 1 - 1) with
+        | None -> true
+        | _ -> false
+      )
+    | 3, _, _, 2 -> (
+        match b.(p + !rows + 1 - 1), b.(p + (2 * !rows) + 2 - 1) with
+        | None, _ -> false
+        | Some piece, Some piece2 -> false
+        | Some piece, None -> P.side_of piece = (if side = 1 then P.Black else P.Red)
+      )
+    | 4, _, _, 1 -> (
+        match b.(p + !rows - 1 - 1) with
+        | None -> true
+        | _ -> false
+      )
+    | 4, _, _, 2 -> (
+        match b.(p + !rows - 1 - 1), b.(p + (2 * !rows) - 2 - 1) with
+        | None, _ -> false
+        | Some piece, Some piece2 -> false
+        | Some piece, None -> P.side_of piece = (if side = 1 then P.Black else P.Red)
+      )
+    | _ -> failwith "What"
+
+
   let movable b = 
-    failwith "unimplemented"
+    let rec checkboard i lst1 lst2= 
+      if i = !rows * !rows then [lst1; lst2] else
+        match b.(i) with
+        | None -> checkboard (i+1) lst1 lst2
+        | Some p -> if (P.side_of (getState b (!rows * !rows)) = P.side_of p) then (
+            match P.side_of p, P.is_king p with
+            | P.Red, false -> (
+                match check b 3 i 1 1 || check b 4 i 1 1, check b 3 i 2 1 || check b 4 i 2 1 with
+                | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
+                | true, false -> checkboard (i+1) (i+1::lst1) lst2
+                | false, true -> checkboard (i+1) lst1 (i+1::lst2)
+                | false, false -> checkboard (i+1) lst1 lst2
+              )
+            | P.Black, false -> (
+                match check b 1 i 1 2 || check b 2 i 1 2, check b 1 i 2 2 || check b 2 i 2 2 with
+                | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
+                | true, false -> checkboard (i+1) (i+1::lst1) lst2
+                | false, true -> checkboard (i+1) lst1 (i+1::lst2)
+                | false, false -> checkboard (i+1) lst1 lst2
+              )
+            | P.Red, true -> (
+                match check b 1 i 1 1 || check b 2 i 1 1 || check b 3 i 1 1 || check b 4 i 1 1
+                    , check b 1 i 2 1 || check b 2 i 2 1 || check b 3 i 2 1 || check b 4 i 2 1 with
+                | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
+                | true, false -> checkboard (i+1) (i+1::lst1) lst2
+                | false, true -> checkboard (i+1) lst1 (i+1::lst2)
+                | false, false -> checkboard (i+1) lst1 lst2
+              )
+            | P.Black, true -> (
+                match check b 1 i 1 2 || check b 2 i 1 2 || check b 3 i 1 2 || check b 4 i 1 2
+                    , check b 1 i 2 2 || check b 2 i 2 2 || check b 3 i 2 2 || check b 4 i 2 2 with
+                | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
+                | true, false -> checkboard (i+1) (i+1::lst1) lst2
+                | false, true -> checkboard (i+1) lst1 (i+1::lst2)
+                | false, false -> checkboard (i+1) lst1 lst2
+              )
+          )else checkboard (i+1) lst1 lst2 in
+
+    match checkboard 0 [] [] with
+    | [l1; []] -> l1
+    | [l1; l2] -> l2
+    | _ -> failwith "Something went wrong"
 
   let is_valid_move b p1 p2=
-    true
+    match b.(p1 - 1) with
+    | None -> false
+    | Some p -> let side = (
+        match P.side_of p with
+        | P.Red -> 1
+        | P.Black -> 2
+      ) in
+      match (p2 - p1) with
+      | i when i = - !rows - 1 -> check b 1 p1 1 side
+      | i when i = - !rows + 1 -> check b 2 p1 1 side
+      | i when i = !rows + 1 -> check b 3 p1 1 side
+      | i when i = !rows - 1 -> check b 4 p1 1 side
+      | _ -> false
 
   let is_valid_jump b p1 p2=
-    true
+    match b.(p1 - 1) with
+    | None -> false
+    | Some p -> let side = (
+        match P.side_of p with
+        | P.Red -> 1
+        | P.Black -> 2
+      ) in
+      match (p2 - p1) with
+      | i when i = - 2 * !rows - 2 -> check b 1 p1 2 side
+      | i when i = - 2 * !rows + 2 -> check b 2 p1 2 side
+      | i when i = 2 * !rows + 2 -> check b 3 p1 2 side
+      | i when i = 2 * !rows - 2 -> check b 4 p1 2 side
+      | _ -> false
 
   let move b p1 p2 =
     let p1 = p1 - 1 in
     let p2 = p2 - 1 in
-    if is_valid_move b p1 p2 then (
+    if is_valid_move b p1 p2 && (List.mem p1 (movable b)) then (
       (b.(p2) <- b.(p1); b.(p1) <- None;)
     ) else print_string "invalid";()
 
   let jump b p1 p2 =
     let p1 = p1 -1 in
     let p2 = p2 -1 in
-    if is_valid_jump b p1 p2 then 
+    if is_valid_jump b p1 p2 && (List.mem p1 (movable b)) then 
       (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
     else print_string "invalid";()
 
