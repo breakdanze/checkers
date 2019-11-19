@@ -228,10 +228,10 @@ module Board= struct
         | P.Black -> 2
       ) in
       match (p2 - p1) with
-      | i when i = - !rows - 1 -> if (side = 1 && P.is_king p = false) then false else check b 1 (p1 - 1) 1 side
-      | i when i = - !rows + 1 -> if (side = 1 && P.is_king p = false) then false else check b 2 (p1 - 1) 1 side
-      | i when i = !rows + 1 -> if (side = 2 && P.is_king p = false) then false else check b 3 (p1 - 1) 1 side
-      | i when i = !rows - 1 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 1 side
+      | i when i = - !rows - 1 -> check b 1 p1 1 side
+      | i when i = - !rows + 1 -> check b 2 p1 1 side
+      | i when i = !rows + 1 -> check b 3 p1 1 side
+      | i when i = !rows - 1 -> check b 4 p1 1 side
       | _ -> false
 
   let is_valid_jump b p1 p2=
@@ -243,25 +243,23 @@ module Board= struct
         | P.Black -> 2
       ) in
       match (p2 - p1) with
-      | i when i = - 2 * !rows - 2 -> if (side = 1 && P.is_king p = false) then false else check b 1 (p1 - 1) 2 side
-      | i when i = - 2 * !rows + 2 -> if (side = 1 && P.is_king p = false) then false else check b 2 (p1 - 1) 2 side
-      | i when i = 2 * !rows + 2 -> if (side = 2 && P.is_king p = false) then false else check b 3 (p1 - 1) 2 side
-      | i when i = 2 * !rows - 2 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 2 side
+      | i when i = - 2 * !rows - 2 -> check b 1 p1 2 side
+      | i when i = - 2 * !rows + 2 -> check b 2 p1 2 side
+      | i when i = 2 * !rows + 2 -> check b 3 p1 2 side
+      | i when i = 2 * !rows - 2 -> check b 4 p1 2 side
       | _ -> false
 
   let move b p1 p2 =
-
+    let p1 = p1 - 1 in
+    let p2 = p2 - 1 in
     if is_valid_move b p1 p2 && (List.mem p1 (movable b)) then (
-      let p1 = p1 - 1 in
-      let p2 = p2 - 1 in
       (b.(p2) <- b.(p1); b.(p1) <- None;)
     ) else print_string "invalid";()
 
   let jump b p1 p2 =
-
+    let p1 = p1 -1 in
+    let p2 = p2 -1 in
     if is_valid_jump b p1 p2 && (List.mem p1 (movable b)) then 
-      let p1 = p1 -1 in
-      let p2 = p2 -1 in
       (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
     else print_string "invalid";()
 
@@ -279,7 +277,5 @@ module Board= struct
     | _ -> failwith "WHAT"
 
   let win b =
-    match movable b with
-    | [] -> change_turn b; print_string (current_turn b); print_string " wins"; true
-    | _ -> false
+    failwith "unimplemented"
 end

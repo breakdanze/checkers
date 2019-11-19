@@ -1,7 +1,7 @@
 open Board
 open Command
 
-(** display function *)
+(** display function*)
 let display b =
   let rec displaylst = function
     |[] -> ()
@@ -22,16 +22,6 @@ let display b =
     else print_endline "" in
   displaylst (Board.to_list b); print_string " "; displaycol 0;;
 
-let coord_to_int c = 
-  try Some (
-      let column = (Char.code (String.get c 0) - 97) in 
-      if column>7 || column<0 then (raise Malformed) else
-        let row = (Char.code (String.get c 1) - 49) in 
-        if row>8 || row<0 then (raise Malformed) else 
-          (column+(7-row)*8)+1
-    ) with Malformed -> ();
-    None
-
 
 let rec change_state (board:Board.t) : unit =
   let _ = display board in 
@@ -41,26 +31,7 @@ let rec change_state (board:Board.t) : unit =
     let user_input = read_line () in 
     let input_parsed = parse user_input in 
     match input_parsed with 
-    | Move move_phrase -> 
-      let int_coord1 = (match (coord_to_int (List.nth move_phrase 0)) with 
-          | Some c -> c
-          | None -> -1) in 
-      let int_coord2 = (match (coord_to_int (List.nth move_phrase 1)) with 
-          | Some c -> c
-          | None -> -1) in 
-      if int_coord1 = -1 || int_coord2 = -1 then 
-        (print_string ("\n\nInvalid coordinates. Please try again.");
-         change_state board )
-      else 
-        let _ = (print_int int_coord1) in
-        let _ = (print_int int_coord2) in
-        if (Board.is_valid_move board int_coord1 int_coord2) then 
-          (Board.move  board int_coord1 int_coord2;
-           Board.change_turn board;
-           change_state board)
-        else (print_string ("\n\nInvalid move. Please try again.");
-              change_state board)
-
+    | Move move_phrase -> change_state board
     | Quit -> (
         print_string "\nQuitting...\n\n"; 
         exit 0 ) 
