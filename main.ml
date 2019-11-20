@@ -1,5 +1,6 @@
 open Board
 open Command
+open Graphics
 
 (** display function *)
 let display b =
@@ -24,6 +25,21 @@ let display b =
     else print_endline "" in
   displaylst (Board.to_list b); print_string " "; displaycol 0;;
 
+let display2 b = 
+  open_graph " 600x600";
+  (let rec draw_lst b n = match b with
+      | (i, "Space")::t -> draw_lst t n-1
+      | (i, "Black")::t -> set_color (rgb 85 85 85);
+        fill_circle ((((i-1) mod !Board.rows) + 1)*60) (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
+      | (i, "Red")::t -> set_color (rgb 255 0 0);
+        fill_circle ((((i-1) mod !Board.rows) + 1)*60) (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
+      | (i, "Red King")::t -> set_color (rgb 170 0 0);
+        fill_circle (600-(((i mod !Board.rows) + 1)*60)) (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
+      | (i, "Black King")::t -> set_color (rgb 0 0 0);
+        fill_circle (600-(((i mod !Board.rows) + 1)*60)) (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
+      | _ -> -1 in
+   match draw_lst (Board.to_list b) 64 with _ -> ())
+
 let coord_to_int c = 
   try Some (
       let column = (Char.code (String.get c 0) - 97) in 
@@ -36,7 +52,7 @@ let coord_to_int c =
 
 
 let rec change_state (board:Board.t) : unit =
-  let _ = display board in 
+  let _ = display2 board in 
   if (Board.win board) then 
     print_string ((Board.current_turn board)^" wins!")
   else ();
