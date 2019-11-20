@@ -189,11 +189,11 @@ let rec blackboundaryvalidmoves piece completeboard piecenumber movenumber =
     else
     if movenumber = 0 then
       if List.nth completeboard (piecenumber-7) = None then 
-        (piecenumber, piecenumber-7) :: redboundaryvalidmoves piece 
+        (piecenumber, piecenumber-7) :: blackboundaryvalidmoves piece 
           completeboard piecenumber (movenumber+1) else
       if List.nth completeboard (piecenumber-14) = None &&
          sidecheck completeboard (piecenumber-7) = Red then
-        (piecenumber, piecenumber-14) :: redboundaryvalidmoves piece 
+        (piecenumber, piecenumber-14) :: blackboundaryvalidmoves piece 
           completeboard piecenumber (movenumber+1) else []
     else
     if movenumber = 1 then 
@@ -207,11 +207,11 @@ let rec blackboundaryvalidmoves piece completeboard piecenumber movenumber =
     if piecenumber mod 8 = 0 then
       if movenumber = 0 then
         if piecenumber > 7 && List.nth completeboard (piecenumber-7) = None then 
-          (piecenumber, piecenumber-7) :: redboundaryvalidmoves piece 
+          (piecenumber, piecenumber-7) :: blackboundaryvalidmoves piece 
             completeboard piecenumber (movenumber+1) else
         if piecenumber > 15 && List.nth completeboard (piecenumber-14) = None && 
            sidecheck completeboard (piecenumber-7) = Red then
-          (piecenumber, piecenumber-14) :: redboundaryvalidmoves piece 
+          (piecenumber, piecenumber-14) :: blackboundaryvalidmoves piece 
             completeboard piecenumber (movenumber+1) else [] else 
       if movenumber = 1 then
         if piecenumber < 56 && List.nth completeboard (piecenumber+9) = None then 
@@ -222,11 +222,11 @@ let rec blackboundaryvalidmoves piece completeboard piecenumber movenumber =
     if piecenumber mod 8 = 7 then
       if movenumber = 0 then
         if piecenumber < 56 && List.nth completeboard (piecenumber+7) = None then 
-          (piecenumber, piecenumber+7) :: redboundaryvalidmoves piece 
+          (piecenumber, piecenumber+7) :: blackboundaryvalidmoves piece 
             completeboard piecenumber (movenumber+1) else
         if piecenumber < 48 && List.nth completeboard (piecenumber+14) = None && 
            sidecheck completeboard (piecenumber+7) = Red then
-          (piecenumber, piecenumber+14) :: redboundaryvalidmoves piece 
+          (piecenumber, piecenumber+14) :: blackboundaryvalidmoves piece 
             completeboard piecenumber (movenumber+1) else [] else 
       if movenumber = 1 then
         if piecenumber > 7 && List.nth completeboard (piecenumber-9) = None then 
@@ -237,11 +237,11 @@ let rec blackboundaryvalidmoves piece completeboard piecenumber movenumber =
     if piecenumber < 8 then 
       if movenumber = 0 then
         if List.nth completeboard (piecenumber+7) = None then 
-          (piecenumber, piecenumber+7) :: redboundaryvalidmoves piece 
+          (piecenumber, piecenumber+7) :: blackboundaryvalidmoves piece 
             completeboard piecenumber (movenumber+1) else
         if List.nth completeboard (piecenumber+14) = None &&
            sidecheck completeboard (piecenumber+7) = Red then
-          (piecenumber, piecenumber+14) :: redboundaryvalidmoves piece 
+          (piecenumber, piecenumber+14) :: blackboundaryvalidmoves piece 
             completeboard piecenumber (movenumber+1) else []
       else
       if movenumber = 1 then 
@@ -253,11 +253,11 @@ let rec blackboundaryvalidmoves piece completeboard piecenumber movenumber =
     if piecenumber > 55 then 
       if movenumber = 0 then
         if List.nth completeboard (piecenumber-7) = None then 
-          (piecenumber, piecenumber-7) :: redboundaryvalidmoves piece 
+          (piecenumber, piecenumber-7) :: blackboundaryvalidmoves piece 
             completeboard piecenumber (movenumber+1) else
         if List.nth completeboard (piecenumber-14) = None &&
            sidecheck completeboard (piecenumber-7) = Red then
-          (piecenumber, piecenumber-14) :: redboundaryvalidmoves piece 
+          (piecenumber, piecenumber-14) :: blackboundaryvalidmoves piece 
             completeboard piecenumber (movenumber+1) else []
       else
       if movenumber = 1 then 
@@ -273,18 +273,18 @@ let rec blackboundaryvalidmoves piece completeboard piecenumber movenumber =
 let rec blackvalidmoves piece completeboard piecenumber movenumber = 
   if (piecenumber mod 8 = 0) || (piecenumber mod 8 = 7 || 
                                  piecenumber < 8 || piecenumber > 55) then 
-    redboundaryvalidmoves piece completeboard piecenumber 0 else
+    blackboundaryvalidmoves piece completeboard piecenumber 0 else
   if (Board.P.is_king piece) = false then 
     if movenumber = 0 then 
       if List.nth completeboard (piecenumber-7) = None then 
-        (piecenumber, piecenumber-7) :: redvalidmoves piece 
+        (piecenumber, piecenumber-7) :: blackvalidmoves piece 
           completeboard piecenumber (movenumber+1) else
       if piecenumber > 13 && piecenumber mod 8 = 6 && 
          List.nth completeboard (piecenumber-14) = None && 
          sidecheck completeboard (piecenumber-7) = Red then
-        (piecenumber, piecenumber-14) :: redvalidmoves piece 
+        (piecenumber, piecenumber-14) :: blackvalidmoves piece 
           completeboard piecenumber (movenumber+1) else 
-        redvalidmoves piece completeboard piecenumber (movenumber+1) else
+        blackvalidmoves piece completeboard piecenumber (movenumber+1) else
     if movenumber = 1 then 
       if List.nth completeboard (piecenumber-9) = None then 
         (piecenumber, piecenumber-9) :: [] else
@@ -296,34 +296,34 @@ let rec blackvalidmoves piece completeboard piecenumber movenumber =
   else 
   if movenumber = 0 then 
     if List.nth completeboard (piecenumber+7) = None then 
-      (piecenumber, piecenumber+7) :: redvalidmoves piece 
+      (piecenumber, piecenumber+7) :: blackvalidmoves piece 
         completeboard piecenumber (movenumber+1) else
     if piecenumber < 50 && piecenumber mod 8 <> 1 && 
        List.nth completeboard (piecenumber+14) = None && 
        sidecheck completeboard (piecenumber+7) = Red then
-      (piecenumber, piecenumber+14) :: redvalidmoves piece 
+      (piecenumber, piecenumber+14) :: blackvalidmoves piece 
         completeboard piecenumber (movenumber+1) else 
-      redvalidmoves piece completeboard piecenumber (movenumber+1) else
+      blackvalidmoves piece completeboard piecenumber (movenumber+1) else
   if movenumber = 1 then 
     if List.nth completeboard (piecenumber+9) = None then 
-      (piecenumber, piecenumber+9) :: redvalidmoves piece 
+      (piecenumber, piecenumber+9) :: blackvalidmoves piece 
         completeboard piecenumber (movenumber+1) else
     if piecenumber < 46 && piecenumber mod 8 <> 6 && 
        List.nth completeboard (piecenumber+18) = None && 
        sidecheck completeboard (piecenumber+9) = Red then
-      (piecenumber, piecenumber+18) :: redvalidmoves piece 
+      (piecenumber, piecenumber+18) :: blackvalidmoves piece 
         completeboard piecenumber (movenumber+1) else 
-      redvalidmoves piece completeboard piecenumber (movenumber+1) else
+      blackvalidmoves piece completeboard piecenumber (movenumber+1) else
   if movenumber = 2 then 
     if List.nth completeboard (piecenumber-7) = None then 
-      (piecenumber, piecenumber-7) :: redvalidmoves piece 
+      (piecenumber, piecenumber-7) :: blackvalidmoves piece 
         completeboard piecenumber (movenumber+1) else
     if piecenumber > 13 && piecenumber mod 8 = 6 && 
        List.nth completeboard (piecenumber-14) = None && 
        sidecheck completeboard (piecenumber-7) = Red then
-      (piecenumber, piecenumber-14) :: redvalidmoves piece 
+      (piecenumber, piecenumber-14) :: blackvalidmoves piece 
         completeboard piecenumber (movenumber+1) else 
-      redvalidmoves piece completeboard piecenumber (movenumber+1) else
+      blackvalidmoves piece completeboard piecenumber (movenumber+1) else
   if movenumber = 3 then 
     if List.nth completeboard (piecenumber-9) = None then 
       (piecenumber, piecenumber-9) :: [] else
@@ -357,14 +357,26 @@ let rec validmovelistmaker boardlist (completeboard : 'a option list) piecenumbe
 let allvalidmoves (board : Board.t) = 
   List.flatten (validmovelistmaker (arraytolist board) (arraytolist board) 0)
 
+let rec allvalidjumps validmoves =
+  match validmoves with
+  | [] -> []
+  | (p, n) :: t -> if ((p - n) = 14 || (p - n) = 18 || 
+                       (p - n) = -14 || (p - n) = -18) then 
+      (p, n) :: allvalidjumps t 
+    else
+      allvalidjumps t
+
 (* diff1 board is the helper function that will allow the AI
    to make a decision given input board that corresponds to 
    level 1 difficulty. This difficulty's AI makes random
    (but valid) moves. *)
-let diff1 (board : Board.t) = 
-  let validmovelength = List.length (allvalidmoves board) in
-  let randint = Random.int validmovelength in
-  (List.nth (allvalidmoves board) randint)
+let diff1 (board : Board.t) : (int * int) =   
+  let validjumplength = List.length (allvalidjumps (allvalidmoves board)) in
+  if validjumplength > 0 then let randintj = Random.int validjumplength in
+    (List.nth (allvalidjumps (allvalidmoves board)) randintj) 
+  else
+    let randintm = Random.int (List.length (allvalidmoves board)) in
+    (List.nth (allvalidmoves board) randintm)
 
 (* diff2 board is the helper function that will allow the AI
    to make a decision given input board that corresponds to 
@@ -381,4 +393,5 @@ let diff2 board =
    to help the AI make its decision. *)
 let make_move difficulty (board : Board.t) : (int * int) =
   if difficulty = 1 then diff1 board else
-  if difficulty = 2 then diff2 board else failwith ""
+  if difficulty = 2 then diff2 board else
+    failwith "Unimplemented"
