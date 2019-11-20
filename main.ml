@@ -1,5 +1,6 @@
 open Board
 open Command
+open Graphics
 
 (** display function *)
 let display b =
@@ -8,8 +9,8 @@ let display b =
     |[(0,_)] -> print_endline ""
     |(i, s)::t ->(if i mod (!Board.rows) = 1 then 
                     (print_endline "";
-                     print_int (i / !Board.rows + 1); 
-                     print_string (if i / !Board.rows + 1 < 10 then " " else "")) else ()); 
+                     print_int (!Board.rows - (i / !Board.rows)); 
+                     print_string (if (!Board.rows - (i / !Board.rows)) < 10 then " " else "")) else ()); 
       (match s with
        |"Space" -> print_string "[ ]"; displaylst t
        |"Black" -> print_string " B "; displaylst t
@@ -20,9 +21,44 @@ let display b =
   let rec displaycol i =
     if i < !Board.rows then 
       ( print_string (if (i mod !Board.rows) + 1 < 10 then "  " else " "); 
-        print_int ((i mod !Board.rows) + 1);displaycol (i+1))
+        print_char (Char.chr ((i mod !Board.rows) + 97));displaycol (i+1))
     else print_endline "" in
   displaylst (Board.to_list b); print_string " "; displaycol 0;;
+
+let display2 b = 
+  open_graph " 600x600"; set_color (rgb 170 85 0); fill_rect 15 75 510 510;
+  set_color (rgb 0 0 0);
+  for x = 0 to 7 do moveto 530 (120+60*x); draw_string (string_of_int (x+1)) done;
+  for x = 0 to 7 do moveto (60+60*x) 60; draw_char (Char.chr (x + 97)) done;
+  let rec draw_lst b n = match b with
+    | (i, "Space")::t when (i mod 8 + (i-1) / 8) mod 2 <> 1 -> set_color (rgb 255 204 102);
+      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; draw_lst t n-1
+    | (i, "Space")::t when (i mod 8 + (i-1) / 8) mod 2 = 1 -> set_color (rgb 85 0 0);
+      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; draw_lst t n-1
+    | (i, "Black")::t -> set_color (rgb 255 204 102);
+      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; set_color (rgb 0 0 0);
+      fill_circle ((((i-1) mod !Board.rows) + 1)*60)
+        (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
+    | (i, "Red")::t -> set_color (rgb 255 204 102);
+      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; set_color (rgb 170 0 0);
+      fill_circle ((((i-1) mod !Board.rows) + 1)*60)
+        (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
+    | (i, "Red King")::t -> set_color (rgb 255 204 102);
+      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; set_color (rgb 255 85 85);
+      fill_circle ((((i-1) mod !Board.rows) + 1)*60)
+        (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
+    | (i, "Black King")::t -> set_color (rgb 255 204 102);
+      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; set_color (rgb 85 85 85);
+      fill_circle ((((i-1) mod !Board.rows) + 1)*60)
+        (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
+    | _ -> -1 in
+  draw_lst (Board.to_list b) 64
 
 let coord_to_int c = 
   try Some (
@@ -68,7 +104,7 @@ let eval_move board move_phrase =
 
 
 let rec change_state (board:Board.t) : unit =
-  let _ = display board in 
+  let _ = display2 board in 
   if (Board.win board) then 
     print_string ((Board.current_turn board)^" wins!")
   else ();
