@@ -35,6 +35,9 @@ let coord_to_int c =
 
 let rec change_state (board:Board.t) : unit =
   let _ = display board in 
+  if (Board.win board) then 
+    print_string ((Board.current_turn board)^" wins!")
+  else ();
   print_string ("\n"^Board.current_turn board^"'s turn.\n");
   print_string ("Please enter a command.\n") ;
   try (
@@ -54,11 +57,25 @@ let rec change_state (board:Board.t) : unit =
       else 
         let _ = (print_int int_coord1) in
         let _ = (print_int int_coord2) in
-        if (Board.is_valid_move board int_coord1 int_coord2) then 
-          (Board.move  board int_coord1 int_coord2;
-           Board.change_turn board;
-           change_state board)
-        else (print_string ("\n\nInvalid move. Please try again.");
+        let movable = Board.movable board in 
+        if (snd movable <> []) then (*one or more jumps are available *)
+          if (List.mem int_coord1 (snd movable)) then  (*chosen piece is able to make a jump *) 
+            if (Board.is_valid_jump board int_coord1 int_coord2) then (*chosen jump is valid *)
+              (Board.jump board int_coord1 int_coord2;
+               Board.change_turn board;
+               change_state board)
+            else ((print_string ("\n\nInvalid jump. Please try again."));
+                  change_state board)
+          else ((print_string ("\n\nA jump is available. Please try again."));
+                change_state board)
+        else (*one or more moves are available*) 
+        if (List.mem int_coord1 (fst movable)) then (*chosen piece is able to move*)
+          if (Board.is_valid_move board int_coord1 int_coord2) then (*chosen move is valid*)
+            (Board.move board int_coord1 int_coord2;
+             Board.change_turn board;
+             change_state board)          else ((print_string ("\n\nInvalid move. Please try again."));
+                                                change_state board)
+        else ((print_string "\n\nThe chosen piece has no available moves. Please try again.");
               change_state board)
 
     | Quit -> (

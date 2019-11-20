@@ -298,6 +298,6 @@ module Board= struct
 
   let win b =
     match movable b with
-    | ([], []) -> change_turn b; print_string (current_turn b); print_string " wins"; true
+    | ([], []) -> change_turn b; true
     | _ -> false
 end
