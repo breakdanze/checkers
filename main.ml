@@ -1,6 +1,7 @@
 open Board
 open Command
 open Graphics
+open Ai
 
 (** display function *)
 let display b =
@@ -103,48 +104,52 @@ let eval_move board move_phrase =
           board)
 
 
-let rec change_state (board:Board.t) : unit =
+let rec change_state (board:Board.t) (mode): unit =
   let _ = display2 board in 
   if (Board.win board) then 
     print_string ((Board.current_turn board)^" wins!")
   else ();
   print_string ("\n"^Board.current_turn board^"'s turn.\n");
-  print_string ("Please enter a command.\n") ;
-  try (
-    let user_input = read_line () in 
-    let input_parsed = parse user_input in 
-    match input_parsed with 
-    | Move move_phrase -> change_state (eval_move board move_phrase)
-
-
-    | Quit -> (
-        print_string "\nQuitting...\n\n"; 
-        exit 0 ) 
-    | Help -> (
-        print_string "\nUse 'move [coordinate1] [coordinate2]' to move your 
+  if (String.equal mode "1p") && (String.equal (Board.current_turn board) "Red") then 
+    let movement = Ai.make_move 1 board in
+    print_int(fst movement);
+    print_int(snd movement);
+    Board.move board ((fst movement)+1) ((snd movement)+1);
+    Board.change_turn board;
+    change_state board mode
+  else 
+    try (
+      print_string ("Please enter a command.\n");
+      let user_input = read_line () in 
+      let input_parsed = parse user_input in 
+      match input_parsed with 
+      | Move move_phrase -> change_state (eval_move board move_phrase) mode
+      | Quit -> (
+          print_string "\nQuitting...\n\n"; 
+          exit 0 ) 
+      | Help -> (
+          print_string "\nUse 'move [coordinate1] [coordinate2]' to move your 
         piece from coordinate1 to coordinate2 (ex. 'move a3 b4')\nUse 'help' to 
         see this menu. \nUse 'quit' to exit the game.\nPress enter to continue.
         \n";
-        match read_line () with 
-        | _ -> change_state board
+          match read_line () with 
+          | _ -> change_state board mode
+        )
+
+    )
+    with
+    | Malformed -> (
+        print_string "\n\nMalformed command. Try again.";
+        change_state board mode
+      )
+    | Empty -> ( 
+        print_string "\n\nEmpty command. Try again.";
+        change_state board mode
       )
 
-  )
-  with
-  | Malformed -> (
-      print_string "\n\nMalformed command. Try again.";
-      change_state board
-    )
-  | Empty -> ( 
-      print_string "\n\nEmpty command. Try again.";
-      change_state board
-    )
-
 let play_game (mode:string) : unit= 
-  if String.equal mode "1p" then
-    change_state (Board.init  8)
-  else if String.equal mode "2p" then 
-    change_state (Board.init  8)
+  if (String.equal mode "1p" || String.equal mode "2p") then
+    change_state (Board.init  8) mode
   else print_endline "\nInvalid mode\n\n"
 
 let main () =
