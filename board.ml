@@ -258,7 +258,12 @@ module Board= struct
     if is_valid_move b p1 p2 && (List.mem p1 lst) then (
       let p1 = p1 - 1 in
       let p2 = p2 - 1 in
-      (b.(p2) <- b.(p1); b.(p1) <- None;)
+      match b.(p1) with
+      | None -> failwith "???"
+      | Some p ->
+        if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) || (p2 / !rows = 0 && P.side_of p = P.Black) then
+          (b.(p2) <- Some (P.create (P.side_of p) true); b.(p1) <- None;)
+        else (b.(p2) <- b.(p1); b.(p1) <- None;)
     ) else print_string "invalid";()
 
   (* p1 p2 are DISPLAY POSITION*)
@@ -270,7 +275,12 @@ module Board= struct
     if is_valid_jump b p1 p2 && (List.mem p1 lst) then 
       let p1 = p1 -1 in
       let p2 = p2 -1 in
-      (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
+      match b.(p1) with
+      | None -> failwith "???"
+      | Some p ->
+        if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) || (p2 / !rows = 0 && P.side_of p = P.Black) then
+          (b.(p2) <- Some (P.create (P.side_of p) true); b.((p1+p2)/2) <- None;b.(p1) <- None;)
+        else (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
     else print_string "invalid";()
 
   let current_turn b =
