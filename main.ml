@@ -34,6 +34,38 @@ let coord_to_int c =
     ) with Malformed -> ();
     None
 
+let eval_move board move_phrase = 
+  let int_coord1 = (match (coord_to_int (List.nth move_phrase 0)) with 
+      | Some c -> c
+      | None -> -1) in 
+  let int_coord2 = (match (coord_to_int (List.nth move_phrase 1)) with 
+      | Some c -> c
+      | None -> -1) in 
+  if int_coord1 = -1 || int_coord2 = -1 then 
+    (print_string ("\n\nInvalid coordinates. Please try again.");
+     board)
+  else 
+    let movable = Board.movable board in 
+    if (snd movable <> []) then (*one or more jumps are available *)
+      if (List.mem int_coord1 (snd movable)) then  (*chosen piece is able to make a jump *) 
+        if (Board.is_valid_jump board int_coord1 int_coord2) then (*chosen jump is valid *)
+          (Board.jump board int_coord1 int_coord2;
+           Board.change_turn board;
+           board)
+        else ((print_string ("\n\nInvalid jump. Please try again."));
+              board)
+      else ((print_string ("\n\nA jump is available. Please try again."));
+            board)
+    else (*one or more moves are available*) 
+    if (List.mem int_coord1 (fst movable)) then (*chosen piece is able to move*)
+      if (Board.is_valid_move board int_coord1 int_coord2) then (*chosen move is valid*)
+        (Board.move board int_coord1 int_coord2;
+         Board.change_turn board;
+         board)          else ((print_string ("\n\nInvalid move. Please try again."));
+                               board)
+    else ((print_string "\n\nThe chosen piece has no available moves. Please try again.");
+          board)
+
 
 let rec change_state (board:Board.t) : unit =
   let _ = display board in 
@@ -46,37 +78,8 @@ let rec change_state (board:Board.t) : unit =
     let user_input = read_line () in 
     let input_parsed = parse user_input in 
     match input_parsed with 
-    | Move move_phrase -> 
-      let int_coord1 = (match (coord_to_int (List.nth move_phrase 0)) with 
-          | Some c -> c
-          | None -> -1) in 
-      let int_coord2 = (match (coord_to_int (List.nth move_phrase 1)) with 
-          | Some c -> c
-          | None -> -1) in 
-      if int_coord1 = -1 || int_coord2 = -1 then 
-        (print_string ("\n\nInvalid coordinates. Please try again.");
-         change_state board )
-      else 
-        let movable = Board.movable board in 
-        if (snd movable <> []) then (*one or more jumps are available *)
-          if (List.mem int_coord1 (snd movable)) then  (*chosen piece is able to make a jump *) 
-            if (Board.is_valid_jump board int_coord1 int_coord2) then (*chosen jump is valid *)
-              (Board.jump board int_coord1 int_coord2;
-               Board.change_turn board;
-               change_state board)
-            else ((print_string ("\n\nInvalid jump. Please try again."));
-                  change_state board)
-          else ((print_string ("\n\nA jump is available. Please try again."));
-                change_state board)
-        else (*one or more moves are available*) 
-        if (List.mem int_coord1 (fst movable)) then (*chosen piece is able to move*)
-          if (Board.is_valid_move board int_coord1 int_coord2) then (*chosen move is valid*)
-            (Board.move board int_coord1 int_coord2;
-             Board.change_turn board;
-             change_state board)          else ((print_string ("\n\nInvalid move. Please try again."));
-                                                change_state board)
-        else ((print_string "\n\nThe chosen piece has no available moves. Please try again.");
-              change_state board)
+    | Move move_phrase -> change_state (eval_move board move_phrase)
+
 
     | Quit -> (
         print_string "\nQuitting...\n\n"; 
