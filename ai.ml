@@ -381,5 +381,4 @@ let diff2 board =
    to help the AI make its decision. *)
 let make_move difficulty (board : Board.t) : (int * int) =
   if difficulty = 1 then diff1 board else
-  if difficulty = 2 then diff2 board else
-    failwith "Unimplemented"
+  if difficulty = 2 then diff2 board else failwith ""
