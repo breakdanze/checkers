@@ -21,9 +21,9 @@ end
 
 
 module type BoardSig = sig
-  type t
 
   module P : PieceSig
+  type t = P.t option array
 
   (** [rows] is the # of rows and columns of the board.*)
   val rows: int ref
