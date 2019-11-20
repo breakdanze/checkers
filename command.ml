@@ -17,4 +17,5 @@ let parse str =
   | [] -> raise Empty 
   | "quit" :: [] -> (Quit)
   | "move" :: t -> (Move (t))
+  | "help" :: [] -> (Help)
   | _ -> raise Malformed

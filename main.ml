@@ -9,8 +9,8 @@ let display b =
     |[(0,_)] -> print_endline ""
     |(i, s)::t ->(if i mod (!Board.rows) = 1 then 
                     (print_endline "";
-                     print_int (i / !Board.rows + 1); 
-                     print_string (if i / !Board.rows + 1 < 10 then " " else "")) else ()); 
+                     print_int (!Board.rows - (i / !Board.rows)); 
+                     print_string (if (!Board.rows - (i / !Board.rows)) < 10 then " " else "")) else ()); 
       (match s with
        |"Space" -> print_string "[ ]"; displaylst t
        |"Black" -> print_string " B "; displaylst t
@@ -21,7 +21,7 @@ let display b =
   let rec displaycol i =
     if i < !Board.rows then 
       ( print_string (if (i mod !Board.rows) + 1 < 10 then "  " else " "); 
-        print_int ((i mod !Board.rows) + 1);displaycol (i+1))
+        print_char (Char.chr ((i mod !Board.rows) + 97));displaycol (i+1))
     else print_endline "" in
   displaylst (Board.to_list b); print_string " "; displaycol 0;;
 
@@ -73,8 +73,6 @@ let rec change_state (board:Board.t) : unit =
         (print_string ("\n\nInvalid coordinates. Please try again.");
          change_state board )
       else 
-        let _ = (print_int int_coord1) in
-        let _ = (print_int int_coord2) in
         let movable = Board.movable board in 
         if (snd movable <> []) then (*one or more jumps are available *)
           if (List.mem int_coord1 (snd movable)) then  (*chosen piece is able to make a jump *) 
@@ -100,7 +98,10 @@ let rec change_state (board:Board.t) : unit =
         print_string "\nQuitting...\n\n"; 
         exit 0 ) 
     | Help -> (
-        print_string "\nHelpful message!\nPress enter to continue.\n";
+        print_string "\nUse 'move [coordinate1] [coordinate2]' to move your 
+        piece from coordinate1 to coordinate2 (ex. 'move a3 b4')\nUse 'help' to 
+        see this menu. \nUse 'quit' to exit the game.\nPress enter to continue.
+        \n";
         match read_line () with 
         | _ -> change_state board
       )
