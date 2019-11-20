@@ -6,7 +6,7 @@ let sidecheck completeboard piecenumber =
   | None -> failwith "This shouldn't be possible."
   | Some p -> Board.P.side_of p
 
-let arraytolist board =
+let arraytolist (board : Board.t) =
   Array.to_list board
 
 let rec redboundaryvalidmoves piece completeboard piecenumber movenumber = 
@@ -354,17 +354,23 @@ let rec validmovelistmaker boardlist (completeboard : 'a option list) piecenumbe
           completeboard (piecenumber+1) else 
         validmovelistmaker t completeboard (piecenumber+1)
 
+<<<<<<< HEAD
+let allvalidmoves (board : Board.t) = 
+=======
 let allvalidmoves board = 
+>>>>>>> e6da4c5580494c14eb6fc8787683de79008ef1a9
   List.flatten (validmovelistmaker (arraytolist board) (arraytolist board) 0)
 
 (* diff1 board is the helper function that will allow the AI
    to make a decision given input board that corresponds to 
    level 1 difficulty. This difficulty's AI makes random
    (but valid) moves. *)
-let diff1 board = 
+let diff1 (board : Board.t) = 
   let validmovelength = List.length (allvalidmoves board) in
   let randint = Random.int validmovelength in
-  List.nth (allvalidmoves board) randint
+  match List.nth (allvalidmoves board) randint with
+  | (piecenum, newpiecenum) -> 
+    Move ([string_of_int piecenum; string_of_int newpiecenum])
 
 (* diff2 board is the helper function that will allow the AI
    to make a decision given input board that corresponds to 
@@ -379,7 +385,7 @@ let diff2 board =
    difficulty and the given board. Different difficulties
    correspond with and will call different helper functions
    to help the AI make its decision. *)
-let make_move difficulty board =
+let make_move difficulty (board : Board.t) =
   if difficulty = 1 then diff1 board else
   if difficulty = 2 then diff2 board else
     failwith "Unimplemented"
