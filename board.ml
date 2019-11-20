@@ -9,8 +9,8 @@ module type PieceSig = sig
 end
 
 module type BoardSig = sig
-  type t
   module P : PieceSig
+  type t = P.t option array
   val rows: int ref
   val init: int -> t
   val to_list: t -> (int * string) list
