@@ -14,7 +14,8 @@ module type BoardSig = sig
   val rows: int ref
   val init: int -> t
   val to_list: t -> (int * string) list
-  val movable: t -> int list
+  val check: t -> int -> int -> int -> int -> bool
+  val movable: t -> int list * int list
   val is_valid_move: t -> int -> int -> bool
   val is_valid_jump: t -> int -> int -> bool
   val move: t -> int -> int -> unit
@@ -104,11 +105,10 @@ module Board= struct
     | Some p -> p
     | None -> failwith "No piece at location"
 
-  (** [check b d p s side] is true iff [p] with side [side] is possible to be moved towards [d] in
-      [s] steps.*)
   (* d stands for direction, 1 for left up, 2 for right up, 3 for right down,
        4 for left down. s for steps, jump takes 2, move takes 1.
        side represents side, 1 for red, 2 for black.*)
+  (* input takes in ACTUAL POSITION (starting on 0)*)
   let check b d p s side=
     let p= p+ 1 in
     match d, (p - 1) / !rows, p mod !rows, s with
@@ -177,7 +177,7 @@ module Board= struct
 
   let movable b = 
     let rec checkboard i lst1 lst2= 
-      if i = !rows * !rows then [lst1; lst2] else
+      if i = !rows * !rows then (lst1, lst2) else
         match b.(i) with
         | None -> checkboard (i+1) lst1 lst2
         | Some p -> if (P.side_of (getState b (!rows * !rows)) = P.side_of p) then (
@@ -214,11 +214,9 @@ module Board= struct
               )
           )else checkboard (i+1) lst1 lst2 in
 
-    match checkboard 0 [] [] with
-    | [l1; []] -> l1
-    | [l1; l2] -> l2
-    | _ -> failwith "Something went wrong"
+    checkboard 0 [] []
 
+  (* p1 p2 are DISPLAY POSITIONS (starting on 1)*)
   let is_valid_move b p1 p2=
     match b.(p1 - 1) with
     | None -> false
@@ -228,12 +226,13 @@ module Board= struct
         | P.Black -> 2
       ) in
       match (p2 - p1) with
-      | i when i = - !rows - 1 -> if (side = 1 && P.is_king p = false) then false else check b 1 p1 1 side
-      | i when i = - !rows + 1 -> if (side = 1 && P.is_king p = false) then false else check b 2 p1 1 side
-      | i when i = !rows + 1 -> if (side = 2 && P.is_king p = false) then false else check b 3 p1 1 side
-      | i when i = !rows - 1 -> if (side = 2 && P.is_king p = false) then false else check b 4 p1 1 side
+      | i when i = - !rows - 1 -> if (side = 1 && P.is_king p = false) then false else check b 1 (p1 - 1) 1 side
+      | i when i = - !rows + 1 -> if (side = 1 && P.is_king p = false) then false else check b 2 (p1 - 1) 1 side
+      | i when i = !rows + 1 -> if (side = 2 && P.is_king p = false) then false else check b 3 (p1 - 1) 1 side
+      | i when i = !rows - 1 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 1 side
       | _ -> false
 
+  (* p1 p2 are DISPLAY POSITION*)
   let is_valid_jump b p1 p2=
     match b.(p1 - 1) with
     | None -> false
@@ -243,26 +242,45 @@ module Board= struct
         | P.Black -> 2
       ) in
       match (p2 - p1) with
-      | i when i = - 2 * !rows - 2 -> if (side = 1 && P.is_king p = false) then false else check b 1 p1 2 side
-      | i when i = - 2 * !rows + 2 -> if (side = 1 && P.is_king p = false) then false else check b 2 p1 2 side
-      | i when i = 2 * !rows + 2 -> if (side = 2 && P.is_king p = false) then false else check b 3 p1 2 side
-      | i when i = 2 * !rows - 2 -> if (side = 2 && P.is_king p = false) then false else check b 4 p1 2 side
+      | i when i = - 2 * !rows - 2 -> if (side = 1 && P.is_king p = false) then false else check b 1 (p1 - 1) 2 side
+      | i when i = - 2 * !rows + 2 -> if (side = 1 && P.is_king p = false) then false else check b 2 (p1 - 1) 2 side
+      | i when i = 2 * !rows + 2 -> if (side = 2 && P.is_king p = false) then false else check b 3 (p1 - 1) 2 side
+      | i when i = 2 * !rows - 2 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 2 side
       | _ -> false
 
-  let move b p1 p2 =
-
-    if is_valid_move b p1 p2 && (List.mem p1 (movable b)) then (
+  (* p1 p2 are DISPLAY POSITION*)
+  let move b p1 p2 = 
+    let lst = (
+      match movable b with
+      | (l1, []) -> l1
+      | (l1, l2) -> []
+    ) in
+    if is_valid_move b p1 p2 && (List.mem p1 lst) then (
       let p1 = p1 - 1 in
       let p2 = p2 - 1 in
-      (b.(p2) <- b.(p1); b.(p1) <- None;)
+      match b.(p1) with
+      | None -> failwith "???"
+      | Some p ->
+        if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) || (p2 / !rows = 0 && P.side_of p = P.Black) then
+          (b.(p2) <- Some (P.create (P.side_of p) true); b.(p1) <- None;)
+        else (b.(p2) <- b.(p1); b.(p1) <- None;)
     ) else print_string "invalid";()
 
+  (* p1 p2 are DISPLAY POSITION*)
   let jump b p1 p2 =
-
-    if is_valid_jump b p1 p2 && (List.mem p1 (movable b)) then 
+    let lst = (
+      match movable b with
+      | (l1, l2) -> l2
+    ) in
+    if is_valid_jump b p1 p2 && (List.mem p1 lst) then 
       let p1 = p1 -1 in
       let p2 = p2 -1 in
-      (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
+      match b.(p1) with
+      | None -> failwith "???"
+      | Some p ->
+        if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) || (p2 / !rows = 0 && P.side_of p = P.Black) then
+          (b.(p2) <- Some (P.create (P.side_of p) true); b.((p1+p2)/2) <- None;b.(p1) <- None;)
+        else (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
     else print_string "invalid";()
 
   let current_turn b =
@@ -280,6 +298,6 @@ module Board= struct
 
   let win b =
     match movable b with
-    | [] -> change_turn b; print_string (current_turn b); print_string " wins"; true
+    | ([], []) -> change_turn b; true
     | _ -> false
 end
