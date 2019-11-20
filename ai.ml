@@ -354,7 +354,11 @@ let rec validmovelistmaker boardlist (completeboard : 'a option list) piecenumbe
           completeboard (piecenumber+1) else 
         validmovelistmaker t completeboard (piecenumber+1)
 
+<<<<<<< HEAD
 let allvalidmoves (board : Board.t) = 
+=======
+let allvalidmoves board = 
+>>>>>>> e6da4c5580494c14eb6fc8787683de79008ef1a9
   List.flatten (validmovelistmaker (arraytolist board) (arraytolist board) 0)
 
 (* diff1 board is the helper function that will allow the AI

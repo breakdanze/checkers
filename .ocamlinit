@@ -1,4 +1,5 @@
 #require "ANSITerminal";;
+#require "graphics";;
 #directory "_build";;
 #load "board.cmo";;
 #load "command.cmo";;
