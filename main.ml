@@ -8,8 +8,8 @@ let display b =
     |[(0,_)] -> print_endline ""
     |(i, s)::t ->(if i mod (!Board.rows) = 1 then 
                     (print_endline "";
-                     print_int (i / !Board.rows + 1); 
-                     print_string (if i / !Board.rows + 1 < 10 then " " else "")) else ()); 
+                     print_int (!Board.rows - (i / !Board.rows)); 
+                     print_string (if (!Board.rows - (i / !Board.rows)) < 10 then " " else "")) else ()); 
       (match s with
        |"Space" -> print_string "[ ]"; displaylst t
        |"Black" -> print_string " B "; displaylst t
@@ -20,7 +20,7 @@ let display b =
   let rec displaycol i =
     if i < !Board.rows then 
       ( print_string (if (i mod !Board.rows) + 1 < 10 then "  " else " "); 
-        print_int ((i mod !Board.rows) + 1);displaycol (i+1))
+        print_char (Char.chr ((i mod !Board.rows) + 97));displaycol (i+1))
     else print_endline "" in
   displaylst (Board.to_list b); print_string " "; displaycol 0;;
 
