@@ -57,8 +57,6 @@ let rec change_state (board:Board.t) : unit =
         (print_string ("\n\nInvalid coordinates. Please try again.");
          change_state board )
       else 
-        let _ = (print_int int_coord1) in
-        let _ = (print_int int_coord2) in
         let movable = Board.movable board in 
         if (snd movable <> []) then (*one or more jumps are available *)
           if (List.mem int_coord1 (snd movable)) then  (*chosen piece is able to make a jump *) 
@@ -84,7 +82,10 @@ let rec change_state (board:Board.t) : unit =
         print_string "\nQuitting...\n\n"; 
         exit 0 ) 
     | Help -> (
-        print_string "\nHelpful message!\nPress enter to continue.\n";
+        print_string "\nUse 'move [coordinate1] [coordinate2]' to move your 
+        piece from coordinate1 to coordinate2 (ex. 'move a3 b4')\nUse 'help' to 
+        see this menu. \nUse 'quit' to exit the game.\nPress enter to continue.
+        \n";
         match read_line () with 
         | _ -> change_state board
       )
