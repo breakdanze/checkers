@@ -354,7 +354,7 @@ let rec validmovelistmaker boardlist (completeboard : 'a option list) piecenumbe
           completeboard (piecenumber+1) else 
         validmovelistmaker t completeboard (piecenumber+1)
 
-let allvalidmoves board = 
+let allvalidmoves (board : Board.t) = 
   List.flatten (validmovelistmaker (arraytolist board) (arraytolist board) 0)
 
 (* diff1 board is the helper function that will allow the AI
@@ -364,9 +364,7 @@ let allvalidmoves board =
 let diff1 (board : Board.t) = 
   let validmovelength = List.length (allvalidmoves board) in
   let randint = Random.int validmovelength in
-  match List.nth (allvalidmoves board) randint with
-  | (piecenum, newpiecenum) -> 
-    Move ([string_of_int piecenum; string_of_int newpiecenum])
+  (List.nth (allvalidmoves board) randint)
 
 (* diff2 board is the helper function that will allow the AI
    to make a decision given input board that corresponds to 
@@ -381,7 +379,7 @@ let diff2 board =
    difficulty and the given board. Different difficulties
    correspond with and will call different helper functions
    to help the AI make its decision. *)
-let make_move difficulty (board : Board.t) =
+let make_move difficulty (board : Board.t) : (int * int) =
   if difficulty = 1 then diff1 board else
   if difficulty = 2 then diff2 board else
     failwith "Unimplemented"
