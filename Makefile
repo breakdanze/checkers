@@ -1,4 +1,4 @@
-MODULES=board command main authors
+MODULES=ai board command main authors
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)

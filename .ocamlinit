@@ -3,5 +3,6 @@
 #directory "_build";;
 #load "board.cmo";;
 #load "command.cmo";;
+#load "ai.cmo";;
 open Board
 #use "main.ml";;
