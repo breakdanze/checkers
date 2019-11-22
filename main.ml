@@ -87,7 +87,8 @@ let eval_move board move_phrase =
       if (List.mem int_coord1 (snd movable)) then  (*chosen piece is able to make a jump *) 
         if (Board.is_valid_jump board int_coord1 int_coord2) then (*chosen jump is valid *)
           (Board.jump board int_coord1 int_coord2;
-           Board.change_turn board;
+           if not (List.mem (int_coord2) (snd (Board.movable board))) then (*no jump is available for int_coord2. change turn.*)
+             Board.change_turn board;
            board)
         else ((print_string ("\n\nInvalid jump. Please try again."));
               board)
@@ -106,46 +107,51 @@ let eval_move board move_phrase =
 
 let rec change_state (board:Board.t) (mode): unit =
   let _ = display2 board in 
-  if (Board.win board) then 
-    print_string ((Board.current_turn board)^" wins!")
-  else ();
-  print_string ("\n"^Board.current_turn board^"'s turn.\n");
-  if (String.equal mode "1p") && (String.equal (Board.current_turn board) "Red") then 
-    let movement = Ai.make_move 1 board in
-    print_int(fst movement);
-    print_int(snd movement);
-    Board.move board ((fst movement)+1) ((snd movement)+1);
-    Board.change_turn board;
-    change_state board mode
-  else 
-    try (
-      print_string ("Please enter a command.\n");
-      let user_input = read_line () in 
-      let input_parsed = parse user_input in 
-      match input_parsed with 
-      | Move move_phrase -> change_state (eval_move board move_phrase) mode
-      | Quit -> (
-          print_string "\nQuitting...\n\n"; 
-          exit 0 ) 
-      | Help -> (
-          print_string "\nUse 'move [coordinate1] [coordinate2]' to move your 
+  if (Board.win board) then (
+    print_string ((Board.current_turn board)^" wins!");
+    print_string "Press enter to exit.";
+    match read_line () with 
+    | exception End_of_file -> () 
+    | quit -> exit 0)
+  else
+    (print_string ("\n"^Board.current_turn board^"'s turn.\n");
+     if (String.equal mode "1p") && (String.equal (Board.current_turn board) "Red") then 
+       let movement = Ai.make_move 1 board in
+       print_int(fst movement);
+       print_int(snd movement);
+       Board.move board ((fst movement)+1) ((snd movement)+1);
+       Board.change_turn board;
+       change_state board mode
+     else 
+       try (
+         print_string ("Please enter a command.\n");
+         let user_input = read_line () in 
+         let input_parsed = parse user_input in 
+         match input_parsed with 
+         | Move move_phrase -> change_state (eval_move board move_phrase) mode
+         | Quit -> (
+             print_string "\nQuitting...\n\n"; 
+             exit 0 ) 
+         | Help -> (
+             print_string "\nUse 'move [coordinate1] [coordinate2]' to move your 
         piece from coordinate1 to coordinate2 (ex. 'move a3 b4')\nUse 'help' to 
         see this menu. \nUse 'quit' to exit the game.\nPress enter to continue.
         \n";
-          match read_line () with 
-          | _ -> change_state board mode
-        )
+             match read_line () with 
+             | _ -> change_state board mode
+           )
 
+       )
+       with
+       | Malformed -> (
+           print_string "\n\nMalformed command. Try again.";
+           change_state board mode
+         )
+       | Empty -> ( 
+           print_string "\n\nEmpty command. Try again.";
+           change_state board mode
+         )
     )
-    with
-    | Malformed -> (
-        print_string "\n\nMalformed command. Try again.";
-        change_state board mode
-      )
-    | Empty -> ( 
-        print_string "\n\nEmpty command. Try again.";
-        change_state board mode
-      )
 
 let play_game (mode:string) : unit= 
   if (String.equal mode "1p" || String.equal mode "2p") then
