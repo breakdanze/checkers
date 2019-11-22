@@ -1,6 +1,11 @@
 open Board
 open Command
 
+let kingcheck completeboard piecenumber = 
+  match (List.nth completeboard piecenumber) with
+  | None -> failwith "This shouldn't be possible."
+  | Some p -> Board.P.is_king p
+
 let sidecheck completeboard piecenumber = 
   match (List.nth completeboard piecenumber) with
   | None -> failwith "This shouldn't be possible."
@@ -366,6 +371,67 @@ let rec allvalidjumps validmoves =
     else
       allvalidjumps t
 
+let safemove n boardlist =
+  if sidecheck boardlist 64 = Red then
+    if (List.nth boardlist (n+7) = None || 
+        sidecheck boardlist (n+7) = Red) = false then false else
+    if (List.nth boardlist (n+9) = None || 
+        sidecheck boardlist (n+9) = Red) = false then false else
+    if (List.nth boardlist (n-7) = None || 
+        sidecheck boardlist (n-7) = Red || 
+        kingcheck boardlist (n-7) = false) = false then false else
+    if (List.nth boardlist (n-9) = None || 
+        sidecheck boardlist (n-9) = Red || 
+        kingcheck boardlist (n-9) = false) = false then false else true
+  else
+  if sidecheck boardlist 64 = Black then
+    if (List.nth boardlist (n-7) = None || 
+        sidecheck boardlist (n-7) = Black) = false then false else
+    if (List.nth boardlist (n-9) = None || 
+        sidecheck boardlist (n-9) = Black) = false then false else
+    if (List.nth boardlist (n+7) = None || 
+        sidecheck boardlist (n+7) = Black || 
+        kingcheck boardlist (n+7) = false) = false then false else
+    if (List.nth boardlist (n+9) = None || 
+        sidecheck boardlist (n+9) = Black || 
+        kingcheck boardlist (n+9) = false) = false then false else true 
+  else
+    failwith "This shouldn't be possible."
+
+let rec allsafemoves (board : Board.t) validmoves = 
+  let boardlist = arraytolist board in
+  match validmoves with
+  | [] -> []
+  | (p, n) :: t -> if safemove n boardlist then 
+      (p, n) :: allsafemoves board t 
+    else allsafemoves board t 
+
+let allsafejumps board validmoves =
+  let safemoves = allsafemoves board validmoves in
+  allvalidjumps (safemoves)
+
+(* diff2 board is the helper function that will allow the AI
+   to make a decision given input board that corresponds to 
+   level 2 difficulty. This difficulty allows the AI to avoid 
+   making moves that would directly cause it to lose pieces (for
+   example, the AI will not move its own pieces into a position
+   where they can be taken unless those moves are the only valid ones.) *)
+let diff2 board =
+  let safejumplength = List.length (allsafejumps board (allvalidmoves board)) in
+  let validjumplength = List.length (allvalidjumps (allvalidmoves board)) in
+  let safemovelength = List.length (allsafemoves board (allvalidmoves board)) in
+  if safejumplength > 0 then let randintsj = Random.int safejumplength in
+    (List.nth (allsafejumps board (allvalidmoves board)) randintsj) 
+  else
+  if validjumplength > 0 then let randintj = Random.int validjumplength in
+    (List.nth (allvalidjumps (allvalidmoves board)) randintj) 
+  else
+  if safemovelength > 0 then let randints = Random.int safemovelength in
+    (List.nth (allsafemoves board (allvalidmoves board)) randints) 
+  else
+    let randintm = Random.int (List.length (allvalidmoves board)) in
+    (List.nth (allvalidmoves board) randintm)
+
 (* diff1 board is the helper function that will allow the AI
    to make a decision given input board that corresponds to 
    level 1 difficulty. This difficulty's AI makes random
@@ -377,15 +443,6 @@ let diff1 (board : Board.t) : (int * int) =
   else
     let randintm = Random.int (List.length (allvalidmoves board)) in
     (List.nth (allvalidmoves board) randintm)
-
-(* diff2 board is the helper function that will allow the AI
-   to make a decision given input board that corresponds to 
-   level 2 difficulty. This difficulty allows the AI to avoid 
-   making moves that would directly cause it to lose pieces (for
-   example, the AI will not move its own pieces into a position
-   where they can be taken unless those moves are the only valid ones.) *)
-let diff2 board =
-  failwith "Unimplemented"
 
 (* make_move difficulty board is the move the AI takes with the input
    difficulty and the given board. Different difficulties

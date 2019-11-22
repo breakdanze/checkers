@@ -153,6 +153,44 @@ let rec change_state (board:Board.t) (mode): unit =
          )
     )
 
+let rec change_state2 (board:Board.t) : unit =
+  let _ = display2 board in
+  moveto 0 0;
+  if (Board.win board) then 
+    draw_string ((Board.current_turn board)^" wins!")
+  else
+    draw_string (Board.current_turn board^"'s turn.");
+  print_string ("Please enter a command.\n") ;
+  try (
+    let user_input = read_line () in 
+    let input_parsed = parse user_input in 
+    match input_parsed with 
+    | Move move_phrase -> change_state2 (eval_move board move_phrase)
+
+
+    | Quit -> (
+        print_string "\nQuitting...\n\n"; 
+        exit 0 ) 
+    | Help -> (
+        print_string "\nUse 'move [coordinate1] [coordinate2]' to move your 
+        piece from coordinate1 to coordinate2 (ex. 'move a3 b4')\nUse 'help' to 
+        see this menu. \nUse 'quit' to exit the game.\nPress enter to continue.
+        \n";
+        match read_line () with 
+        | _ -> change_state2 board
+      )
+
+  )
+  with
+  | Malformed -> (
+      print_string "\n\nMalformed command. Try again.";
+      change_state2 board
+    )
+  | Empty -> ( 
+      print_string "\n\nEmpty command. Try again.";
+      change_state2 board
+    )
+
 let play_game (mode:string) : unit= 
   if (String.equal mode "1p" || String.equal mode "2p") then
     change_state (Board.init  8) mode
