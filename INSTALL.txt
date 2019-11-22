@@ -1,8 +1,11 @@
-1. Download and unzip checkers.zip.
-2. Navigate to the checkers directory in the terminal.
+First, install the OCaml graphics package. Instructions for how to install it on WSL are found on Campuswire #1935.
+Note that the computer should be restarted and XMing launched before the GUI will work.
+
+1. Download and unzip src.zip.
+2. Navigate to the src directory in the terminal.
 3. Type make build in the terminal.
 3. Type make play in the terminal.
-4. Type 1p or 2p.
-5. You can now use the following commands:
-move - The system to interpret this does not exist yet but the code to move exists and it is recognized as a valid command.
+4. Type 1p for a one player game or 2p for a two player game.
+5. You can now use the following commands in the terminal:
+move - Move one of the black checkers. Example: move 
 quit - Exit the system.
