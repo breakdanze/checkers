@@ -121,8 +121,8 @@ let rec change_state (board:Board.t) (mode): unit =
           let movement = Ai.make_move 1 board in
           let action = if Board.is_valid_move board ((fst movement)+1) ((snd movement)+1) then Board.move else Board.jump in
           action board ((fst movement)+1) ((snd movement)+1);
-          if not (List.mem (snd movement) (snd (Board.movable board))) then
-            Board.change_turn board;
+          (if not (List.mem (snd movement) (snd (Board.movable board))) then (* TODO: fix multijump, make sure you can only multijump after a jump*)
+             Board.change_turn board);
           change_state board mode
         )
       else 
