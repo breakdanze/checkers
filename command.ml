@@ -16,6 +16,6 @@ let parse str =
   match str_lst with 
   | [] -> raise Empty 
   | "quit" :: [] -> (Quit)
-  | "move" :: t -> (Move (t))
+  | "move" :: t1 :: t2 :: [] -> (Move ([t1; t2]))
   | "help" :: [] -> (Help)
   | _ -> raise Malformed
