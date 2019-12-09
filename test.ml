@@ -23,7 +23,7 @@ let list_basic = [(1, "Space"); (2, "Red"); (3, "Space"); (4, "Red"); (5, "Space
                   (62, "Space"); (63, "Black"); (64, "Space"); (0, "Current turn is Black")]
 
 let board_tests = [
-  "init" >:: (fun _ -> assert_equal (Board.to_list board_basic) (list_basic))
+  "init" >:: (fun _ -> assert_equal (Board.to_list (snd board_basic)) (list_basic))
 ]
 
 let main_tests = []
