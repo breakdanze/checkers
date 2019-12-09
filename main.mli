@@ -4,4 +4,4 @@
    now, this file is left empty. If at some point this changes, code that
    exposes info in main.ml should be prescribed here.
 *)
-val eval_move : Board.Board.t -> string list -> Board.Board.t
+val eval_move : Board.Board.t -> string list -> string * Board.Board.t

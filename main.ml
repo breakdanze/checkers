@@ -26,38 +26,45 @@ let display b =
     else print_endline "" in
   displaylst (Board.to_list b); print_string " "; displaycol 0;;
 
+let fill_rect_of_int i width height = fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+    (600-(((i-1) / !Board.rows + 1)*60+27)) width height
+let draw_rect_of_int width height i = draw_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+    (600-(((i-1) / !Board.rows + 1)*60+27)) width height
+
+let draw_checker b = match b with
+  | (i, "Space") when (i mod 8 + (i-1) / 8) mod 2 <> 1 -> set_color (rgb 255 204 102);
+    fill_rect_of_int i 54 54;
+  | (i, "Space") when (i mod 8 + (i-1) / 8) mod 2 = 1 -> set_color (rgb 85 0 0);
+    fill_rect_of_int i 54 54;
+  | (i, "Black") -> set_color (rgb 255 204 102);
+    fill_rect_of_int i 54 54; set_color (rgb 0 0 0);
+    fill_circle ((((i-1) mod !Board.rows) + 1)*60)
+      (600-(((i-1) / !Board.rows + 1)*60)) 20;
+  | (i, "Red") -> set_color (rgb 255 204 102);
+    fill_rect_of_int i 54 54; set_color (rgb 170 0 0);
+    fill_circle ((((i-1) mod !Board.rows) + 1)*60)
+      (600-(((i-1) / !Board.rows + 1)*60)) 20;
+  | (i, "Red King") -> set_color (rgb 255 204 102);
+    fill_rect_of_int i 54 54; set_color (rgb 255 85 85);
+    fill_circle ((((i-1) mod !Board.rows) + 1)*60)
+      (600-(((i-1) / !Board.rows + 1)*60)) 20;
+  | (i, "Black King") -> set_color (rgb 255 204 102);
+    fill_rect_of_int i 54 54; set_color (rgb 85 85 85);
+    fill_circle ((((i-1) mod !Board.rows) + 1)*60)
+      (600-(((i-1) / !Board.rows + 1)*60)) 20;
+  | _ -> ()
+
+let to_letter x = Char.chr (x + 97)
+
 let display2 b = 
   open_graph " 600x600"; set_color (rgb 170 85 0); fill_rect 15 75 510 510;
-  set_color (rgb 0 0 0);
+  set_color (rgb 170 170 170); fill_rect 300 10 140 50; fill_rect 450 10 150 50;
+  set_color (rgb 0 0 0); moveto 325 35; draw_string "Help";
+  moveto 475 35; draw_string "Quit";
   for x = 0 to 7 do moveto 530 (120+60*x); draw_string (string_of_int (x+1)) done;
-  for x = 0 to 7 do moveto (60+60*x) 60; draw_char (Char.chr (x + 97)) done;
+  for x = 0 to 7 do moveto (60+60*x) 60; draw_char (to_letter x) done;
   let rec draw_lst b n = match b with
-    | (i, "Space")::t when (i mod 8 + (i-1) / 8) mod 2 <> 1 -> set_color (rgb 255 204 102);
-      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
-        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; draw_lst t n-1
-    | (i, "Space")::t when (i mod 8 + (i-1) / 8) mod 2 = 1 -> set_color (rgb 85 0 0);
-      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
-        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; draw_lst t n-1
-    | (i, "Black")::t -> set_color (rgb 255 204 102);
-      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
-        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; set_color (rgb 0 0 0);
-      fill_circle ((((i-1) mod !Board.rows) + 1)*60)
-        (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
-    | (i, "Red")::t -> set_color (rgb 255 204 102);
-      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
-        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; set_color (rgb 170 0 0);
-      fill_circle ((((i-1) mod !Board.rows) + 1)*60)
-        (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
-    | (i, "Red King")::t -> set_color (rgb 255 204 102);
-      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
-        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; set_color (rgb 255 85 85);
-      fill_circle ((((i-1) mod !Board.rows) + 1)*60)
-        (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
-    | (i, "Black King")::t -> set_color (rgb 255 204 102);
-      fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
-        (600-(((i-1) / !Board.rows + 1)*60+27)) 54 54; set_color (rgb 85 85 85);
-      fill_circle ((((i-1) mod !Board.rows) + 1)*60)
-        (600-(((i-1) / !Board.rows + 1)*60)) 20; draw_lst t n-1
+    | h::t -> draw_checker h; draw_lst t n-1
     | _ -> -1 in
   draw_lst (Board.to_list b) 64
 
@@ -79,7 +86,7 @@ let eval_move board move_phrase =
       | Some c -> c
       | None -> -1) in 
   if int_coord1 = -1 || int_coord2 = -1 then 
-    (print_string ("\n\nInvalid coordinates. Please try again.");
+    ("Invalid coordinates. Please try again. ",
      board)
   else 
     let movable = Board.movable board in 
@@ -89,33 +96,61 @@ let eval_move board move_phrase =
           (Board.jump board int_coord1 int_coord2;
            if not (List.mem (int_coord2) (snd (Board.movable board))) then (*no jump is available for int_coord2. change turn.*)
              Board.change_turn board;
-           board)
-        else ((print_string ("\n\nInvalid jump. Please try again."));
+           ("", board))
+        else ("Invalid jump. Please try again. ",
               board)
-      else ((print_string ("\n\nA jump is available. Please try again."));
+      else ("A jump is available. Please try again. ",
             board)
     else (*one or more moves are available*) 
     if (List.mem int_coord1 (fst movable)) then (*chosen piece is able to move*)
       if (Board.is_valid_move board int_coord1 int_coord2) then (*chosen move is valid*)
         (Board.move board int_coord1 int_coord2;
          Board.change_turn board;
-         board)          else ((print_string ("\n\nInvalid move. Please try again."));
-                               board)
-    else ((print_string "\n\nThe chosen piece has no available moves. Please try again.");
-          board)
+         ("", board))          else ("Invalid move. Please try again. ",
+                                     board)
+    else ((draw_string "The chosen piece has no available moves. Please try again. ");
+          ("", board))
 
+let within_rect status x y w h =
+  x < status.mouse_x && status.mouse_x < x+w &&
+  y < status.mouse_y && status.mouse_y < y+h
 
-let rec change_state (board:Board.t) (mode): unit =
+let x_coord_of_point x = (x-33)/60
+let y_coord_of_point y = (y-93)/60+1
+
+let coord_of_status status = 
+  (status.mouse_x |> x_coord_of_point |> to_letter |> Char.escaped)
+  ^(status.mouse_y |> y_coord_of_point |> string_of_int)
+
+let command_of_coords p1 p2 =
+  if p1 = "help" || p2 = "help" then "help" else
+  if p1 = "quit" || p2 = "quit" then "quit" else
+    "move "^p1^" "^p2 
+
+let rec change_state (board:Board.t) (mode) (message:string): unit =
   let _ = display2 board in 
   if (Board.win board) then (
-    print_string ("\n\n"^(Board.current_turn board)^" wins!");
-    print_string "\nPress enter to exit.";
-    match read_line () with 
-    | exception End_of_file -> () 
-    | quit -> exit 0)
+    moveto 0 30;
+    set_text_size 10;
+    draw_string (Board.current_turn board^" wins!");
+    set_color (rgb 170 170 170);
+    fill_rect 0 20 50 10;
+    moveto 0 20;
+    draw_string "Restart ";
+    fill_rect 50 20 50 10;
+    moveto 50 20;
+    draw_string "Quit ";
+    let no_good_click_yet = ref true in
+    while !no_good_click_yet do
+      let status = wait_next_event [Button_up] in
+      if (within_rect status 0 20 50 10) then let () = no_good_click_yet := false in () else
+      if (within_rect status 50 20 50 10) then let () = no_good_click_yet := false in exit 0
+    done)
   else
     (
-      print_string ("\n"^Board.current_turn board^"'s turn.\n");
+      moveto 0 0;
+      draw_string (Board.current_turn board^"'s turn. ");
+      draw_string message;
       if (String.equal mode "1p") && (String.equal (Board.current_turn board) "Red") then 
         (
           let movement = Ai.make_move 1 board in
@@ -123,88 +158,70 @@ let rec change_state (board:Board.t) (mode): unit =
           action board ((fst movement)+1) ((snd movement)+1);
           (if not (List.mem (snd movement) (snd (Board.movable board))) then (* TODO: fix multijump, make sure you can only multijump after a jump*)
              Board.change_turn board);
-          change_state board mode
+          change_state board mode ""
         )
       else 
         try (
-          print_string ("Please enter a command.\n");
-          let user_input = read_line () in 
+          let status1 = wait_next_event [Button_down] in
+          let user_input = if (within_rect status1 300 10 150 50) then "help"
+            else if (within_rect status1 450 10 150 50) then "quit" else
+              let coord1 = coord_of_status status1 in
+              let int1 = coord_to_int coord1 in
+              (match int1 with
+               | Some i -> set_color (rgb 0 0 0); draw_rect_of_int 54 54 i;
+               | None -> print_endline "oops");
+              let status2 = wait_next_event [Button_down] in
+              let coord2 = coord_of_status status2 in
+              let int2 = coord_to_int coord2 in
+              (match int2 with
+               | Some i -> draw_rect_of_int 54 54 i;
+               | None -> ());
+              command_of_coords coord1 coord2 in
           let input_parsed = parse user_input in 
           match input_parsed with 
-          | Move move_phrase -> change_state (eval_move board move_phrase) mode
+          | Move move_phrase -> let pair = eval_move board move_phrase in
+            change_state (snd pair) mode (fst pair)
           | Quit -> (
-              print_string "\nQuitting...\n\n"; 
+              draw_string "Quitting... "; 
               exit 0 ) 
           | Help -> (
-              print_string "\nUse 'move [coordinate1] [coordinate2]' to move your 
-        piece from coordinate1 to coordinate2 (ex. 'move a3 b4')\nUse 'help' to 
-        see this menu. \nUse 'quit' to exit the game.\nPress enter to continue.
-        \n";
-              match read_line () with 
-              | _ -> change_state board mode
+              change_state board mode
+                "Click a checker and then a square you want to move it to. "
             )
 
         )
         with
         | Malformed -> (
-            print_string "\n\nMalformed command. Try again.";
-            change_state board mode
+            change_state board mode "Malformed command. Try again. "
           )
         | Empty -> ( 
-            print_string "\n\nEmpty command. Try again.";
-            change_state board mode
+            change_state board mode "\n\nEmpty command. Try again. "
           )
-    )
-
-let rec change_state2 (board:Board.t) : unit =
-  let _ = display2 board in
-  moveto 0 0;
-  if (Board.win board) then 
-    draw_string ((Board.current_turn board)^" wins!")
-  else
-    draw_string (Board.current_turn board^"'s turn.");
-  print_string ("Please enter a command.\n") ;
-  try (
-    let user_input = read_line () in 
-    let input_parsed = parse user_input in 
-    match input_parsed with 
-    | Move move_phrase -> change_state2 (eval_move board move_phrase)
-
-
-    | Quit -> (
-        print_string "\nQuitting...\n\n"; 
-        exit 0 ) 
-    | Help -> (
-        print_string "\nUse 'move [coordinate1] [coordinate2]' to move your 
-        piece from coordinate1 to coordinate2 (ex. 'move a3 b4')\nUse 'help' to 
-        see this menu. \nUse 'quit' to exit the game.\nPress enter to continue.
-        \n";
-        match read_line () with 
-        | _ -> change_state2 board
-      )
-
-  )
-  with
-  | Malformed -> (
-      print_string "\n\nMalformed command. Try again.";
-      change_state2 board
-    )
-  | Empty -> ( 
-      print_string "\n\nEmpty command. Try again.";
-      change_state2 board
     )
 
 let play_game (mode:string) : unit= 
   if (String.equal mode "1p" || String.equal mode "2p") then
-    change_state (Board.init  8) mode
+    change_state (Board.init  8) mode ""
   else print_endline "\nInvalid mode\n\n"
 
 let main () =
-  ANSITerminal.(print_string [red] "\n\n\nWelcome to checkers.\n");
-  print_endline "Enter '1p' for single player or '2p' for multiplayer";
-  match read_line () with 
-  | exception End_of_file -> () 
-  | mode -> play_game mode
+  open_graph " 600x600";
+  set_text_size 30;
+  draw_string "Welcome to checkers.";
+  set_color (rgb 170 170 170);
+  fill_rect 150 375 300 150;
+  fill_rect 150 150 300 150;
+  set_color (rgb 0 0 0);
+  moveto 150 450;
+  draw_string "Singleplayer";
+  moveto 150 225;
+  draw_string "Multiplayer";
+  let no_good_click_yet = ref true in
+  while !no_good_click_yet do
+    let status = wait_next_event [Button_down] in
+    if (within_rect status 150 375 300 150) then let () = no_good_click_yet := false in play_game "1p"; else
+    if (within_rect status 150 150 300 150) then let () = no_good_click_yet := false in play_game "2p"
+  done
 
 (* Execute the game engine. *)
 let () = main ()
