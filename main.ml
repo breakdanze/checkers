@@ -133,23 +133,27 @@ let rec change_state (board:Board.t) (mode) (message:string): unit =
     moveto 0 30;
     set_text_size 10;
     draw_string (Board.current_turn board^" wins!");
-    set_color (rgb 170 170 170);
-    fill_rect 0 20 50 10;
-    moveto 0 20;
-    draw_string "Restart ";
-    fill_rect 50 20 50 10;
-    moveto 50 20;
-    draw_string "Quit ";
+    (*set_color (rgb 170 170 170);
+      fill_rect 0 20 50 10;
+      moveto 0 20;
+      set_color (rgb 0 0 0);
+      draw_string "Restart ";
+      set_color (rgb 170 170 170);
+      fill_rect 50 20 50 10;
+      moveto 50 20;
+      set_color (rgb 0 0 0);
+      draw_string "Quit ";*)
     let no_good_click_yet = ref true in
     while !no_good_click_yet do
       let status = wait_next_event [Button_up] in
       if (within_rect status 0 20 50 10) then let () = no_good_click_yet := false in () else
-      if (within_rect status 50 20 50 10) then let () = no_good_click_yet := false in exit 0
+      if (within_rect status 450 10 150 50) then let () = no_good_click_yet := false in exit 0
     done)
   else
     (
-      moveto 0 0;
+      moveto 0 20;
       draw_string (Board.current_turn board^"'s turn. ");
+      moveto 0 0;
       draw_string message;
       if (String.equal mode "1p") && (String.equal (Board.current_turn board) "Red") then 
         (
@@ -206,7 +210,8 @@ let play_game (mode:string) : unit=
 
 let main () =
   open_graph " 600x600";
-  set_text_size 30;
+  (*set_text_size 30;*)
+  set_font "-*-fixed-medium-r-semicondensed--20-*-*-*-*-*-iso8859-1";
   draw_string "Welcome to checkers.";
   set_color (rgb 170 170 170);
   fill_rect 150 375 300 150;

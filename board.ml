@@ -264,7 +264,7 @@ module Board= struct
         if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) || (p2 / !rows = 0 && P.side_of p = P.Black) then
           (b.(p2) <- Some (P.create (P.side_of p) true); b.(p1) <- None;)
         else (b.(p2) <- b.(p1); b.(p1) <- None;)
-    ) else print_string "invalid";()
+    ) else print_string "invalid move ";print_int p1; print_string " "; print_int p2;()
 
   (* p1 p2 are DISPLAY POSITION*)
   let jump b p1 p2 =
@@ -281,7 +281,7 @@ module Board= struct
         if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) || (p2 / !rows = 0 && P.side_of p = P.Black) then
           (b.(p2) <- Some (P.create (P.side_of p) true); b.((p1+p2)/2) <- None;b.(p1) <- None;)
         else (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
-    else print_string "invalid";()
+    else print_string "invalid jump ";print_int p1; print_string " "; print_int p2;()
 
   let current_turn b =
     match b.(!rows * !rows) with
