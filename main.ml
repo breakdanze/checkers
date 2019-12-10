@@ -182,6 +182,7 @@ let rec change_state (board:Board.t) (mode) (message:string): unit =
             not (List.mem (snd movement) (snd (Board.movable board))) 
            then (* TODO: fix multijump, make sure you can only multijump after a jump*)
              Board.change_turn board);
+          Unix.sleepf 0.5;
           change_state board mode ""
         )
       else 
