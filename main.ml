@@ -11,7 +11,9 @@ let display b =
     |(i, s)::t ->(if i mod (!Board.rows) = 1 then 
                     (print_endline "";
                      print_int (!Board.rows - (i / !Board.rows)); 
-                     print_string (if (!Board.rows - (i / !Board.rows)) < 10 then " " else "")) else ()); 
+                     print_string 
+                       (if (!Board.rows-(i/ !Board.rows)) <10 then " " else ""))
+                  else ()); 
       (match s with
        |"Space" -> print_string "[ ]"; displaylst t
        |"Black" -> print_string " B "; displaylst t
@@ -26,15 +28,19 @@ let display b =
     else print_endline "" in
   displaylst (Board.to_list b); print_string " "; displaycol 0;;
 
-let fill_rect_of_int i width height = fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+let fill_rect_of_int i width height =
+  fill_rect ((((i-1) mod !Board.rows) + 1)*60-27)
     (600-(((i-1) / !Board.rows + 1)*60+27)) width height
-let draw_rect_of_int width height i = draw_rect ((((i-1) mod !Board.rows) + 1)*60-27)
+let draw_rect_of_int width height i = 
+  draw_rect ((((i-1) mod !Board.rows) + 1)*60-27)
     (600-(((i-1) / !Board.rows + 1)*60+27)) width height
 
 let draw_checker b = match b with
-  | (i, "Space") when (i mod 8 + (i-1) / 8) mod 2 <> 1 -> set_color (rgb 255 204 102);
+  | (i, "Space") when (i mod 8 + (i-1) / 8) mod 2 <> 1 -> 
+    set_color (rgb 255 204 102);
     fill_rect_of_int i 54 54;
-  | (i, "Space") when (i mod 8 + (i-1) / 8) mod 2 = 1 -> set_color (rgb 85 0 0);
+  | (i, "Space") when (i mod 8 + (i-1) / 8) mod 2 = 1 -> 
+    set_color (rgb 85 0 0);
     fill_rect_of_int i 54 54;
   | (i, "Black") -> set_color (rgb 255 204 102);
     fill_rect_of_int i 54 54; set_color (rgb 0 0 0);
@@ -90,11 +96,15 @@ let eval_move board move_phrase =
      board)
   else 
     let movable = Board.movable board in 
-    if (snd movable <> []) then (*one or more jumps are available *)
-      if (List.mem int_coord1 (snd movable)) then  (*chosen piece is able to make a jump *) 
-        if (Board.is_valid_jump board int_coord1 int_coord2) then (*chosen jump is valid *)
+    (*one or more jumps are available *)
+    if (snd movable <> []) then 
+      (*chosen piece is able to make a jump *) 
+      if (List.mem int_coord1 (snd movable)) then  
+        (*chosen jump is valid *)
+        if (Board.is_valid_jump board int_coord1 int_coord2) then 
           (Board.jump board int_coord1 int_coord2;
-           if not (List.mem (int_coord2) (snd (Board.movable board))) then (*no jump is available for int_coord2. change turn.*)
+           (*no jump is available for int_coord2. change turn.*)
+           if not (List.mem (int_coord2) (snd (Board.movable board))) then 
              Board.change_turn board;
            ("", board))
         else ("Invalid jump. Please try again. ",
@@ -102,8 +112,10 @@ let eval_move board move_phrase =
       else ("A jump is available. Please try again. ",
             board)
     else (*one or more moves are available*) 
-    if (List.mem int_coord1 (fst movable)) then (*chosen piece is able to move*)
-      if (Board.is_valid_move board int_coord1 int_coord2) then (*chosen move is valid*)
+      (*chosen piece is able to move*)
+    if (List.mem int_coord1 (fst movable)) then 
+      (*chosen move is valid*)
+      if (Board.is_valid_move board int_coord1 int_coord2) then 
         (Board.move board int_coord1 int_coord2;
          Board.change_turn board;
          ("", board))          else ("Invalid move. Please try again. ",
@@ -146,8 +158,10 @@ let rec change_state (board:Board.t) (mode) (message:string): unit =
     let no_good_click_yet = ref true in
     while !no_good_click_yet do
       let status = wait_next_event [Button_up] in
-      if (within_rect status 0 20 50 10) then let () = no_good_click_yet := false in () else
-      if (within_rect status 450 10 150 50) then let () = no_good_click_yet := false in exit 0
+      if (within_rect status 0 20 50 10) then
+        let () = no_good_click_yet := false in () else
+      if (within_rect status 450 10 150 50) then 
+        let () = no_good_click_yet := false in exit 0
     done)
   else
     (
@@ -155,12 +169,18 @@ let rec change_state (board:Board.t) (mode) (message:string): unit =
       draw_string (Board.current_turn board^"'s turn. ");
       moveto 0 0;
       draw_string message;
-      if (String.equal mode "1p") && (String.equal (Board.current_turn board) "Red") then 
+      if 
+        (String.equal mode "1p") && (String.equal (Board.current_turn board) "Red")
+      then 
         (
           let movement = Ai.make_move 1 board in
-          let action = if Board.is_valid_move board ((fst movement)+1) ((snd movement)+1) then Board.move else Board.jump in
+          let action = if 
+            Board.is_valid_move board ((fst movement)+1) ((snd movement)+1) 
+            then Board.move else Board.jump in
           action board ((fst movement)+1) ((snd movement)+1);
-          (if not (List.mem (snd movement) (snd (Board.movable board))) then (* TODO: fix multijump, make sure you can only multijump after a jump*)
+          (if 
+            not (List.mem (snd movement) (snd (Board.movable board))) 
+           then (* TODO: fix multijump, make sure you can only multijump after a jump*)
              Board.change_turn board);
           change_state board mode ""
         )
@@ -223,8 +243,10 @@ let main () =
   let no_good_click_yet = ref true in
   while !no_good_click_yet do
     let status = wait_next_event [Button_down] in
-    if (within_rect status 150 375 300 150) then let () = no_good_click_yet := false in play_game "1p"; else
-    if (within_rect status 150 150 300 150) then let () = no_good_click_yet := false in play_game "2p"
+    if (within_rect status 150 375 300 150) then 
+      let () = no_good_click_yet := false in play_game "1p"; else
+    if (within_rect status 150 150 300 150) then
+      let () = no_good_click_yet := false in play_game "2p"
   done
 
 (* Execute the game engine. *)

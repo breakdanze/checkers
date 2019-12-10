@@ -53,8 +53,8 @@ module Board= struct
 
   let rows = ref 8
 
-  (** [initPieces a i num1 num2 num3] initializes [a] with pieces in original locations
-      starting at [i] and black side before [num1] rows and red side between from
+  (** [initPieces a i num1 num2 num3] initializes [a] with pieces in original 
+      locations starting at [i] and black side before [num1] rows and red side from
       [num2] + 1 row to [num3] row on a board of [row3] * [col].*)
   let rec initPieces a i num1 num2 num3 col= 
     if i < num1 * col then 
@@ -87,8 +87,10 @@ module Board= struct
         match b.(i) with
         | None -> toList b (i+1) r ((i+1,"Space") :: acc)
         | Some p -> (match P.side_of p with
-            |Red -> toList b (i+1) r ((i+1, if P.is_king p then "Red King" else "Red") :: acc)
-            |Black -> toList b (i+1) r ((i+1, if P.is_king p then "Black King" else "Black") :: acc)
+            |Red -> toList b (i+1) r 
+                      ((i+1, if P.is_king p then "Red King" else "Red") :: acc)
+            |Black -> toList b (i+1) r 
+                        ((i+1,if P.is_king p then "Black King"else "Black")::acc)
           ) else 
         match b.(r*r) with
         |None -> (0, "WTF") ::acc
@@ -137,7 +139,8 @@ module Board= struct
         match b.(p - !rows - 1 - 1), b.(p - (2 * !rows) - 2 - 1) with
         | None, _ -> false
         | Some piece, Some piece2 -> false
-        | Some piece, None -> P.side_of piece = (if side = 1 then P.Black else P.Red)
+        | Some piece, None -> 
+          P.side_of piece = (if side = 1 then P.Black else P.Red)
       )
     | 2, _, _, 1 ->  (
         match b.(p - !rows + 1 - 1) with
@@ -148,7 +151,8 @@ module Board= struct
         match b.(p - !rows + 1 - 1), b.(p - (2 * !rows) + 2 - 1) with
         | None, _ -> false
         | Some piece, Some piece2 -> false
-        | Some piece, None -> P.side_of piece = (if side = 1 then P.Black else P.Red)
+        | Some piece, None -> 
+          P.side_of piece = (if side = 1 then P.Black else P.Red)
       )
     | 3, _, _, 1 -> (
         match b.(p + !rows + 1 - 1) with
@@ -159,7 +163,8 @@ module Board= struct
         match b.(p + !rows + 1 - 1), b.(p + (2 * !rows) + 2 - 1) with
         | None, _ -> false
         | Some piece, Some piece2 -> false
-        | Some piece, None -> P.side_of piece = (if side = 1 then P.Black else P.Red)
+        | Some piece, None -> 
+          P.side_of piece = (if side = 1 then P.Black else P.Red)
       )
     | 4, _, _, 1 -> (
         match b.(p + !rows - 1 - 1) with
@@ -170,7 +175,8 @@ module Board= struct
         match b.(p + !rows - 1 - 1), b.(p + (2 * !rows) - 2 - 1) with
         | None, _ -> false
         | Some piece, Some piece2 -> false
-        | Some piece, None -> P.side_of piece = (if side = 1 then P.Black else P.Red)
+        | Some piece, None -> 
+          P.side_of piece = (if side = 1 then P.Black else P.Red)
       )
     | _ -> failwith "What"
 
@@ -183,30 +189,36 @@ module Board= struct
         | Some p -> if (P.side_of (getState b (!rows * !rows)) = P.side_of p) then (
             match P.side_of p, P.is_king p with
             | P.Red, false -> (
-                match check b 3 i 1 1 || check b 4 i 1 1, check b 3 i 2 1 || check b 4 i 2 1 with
+                match check b 3 i 1 1 || check b 4 i 1 1, 
+                      check b 3 i 2 1 || check b 4 i 2 1 with
                 | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
                 | true, false -> checkboard (i+1) (i+1::lst1) lst2
                 | false, true -> checkboard (i+1) lst1 (i+1::lst2)
                 | false, false -> checkboard (i+1) lst1 lst2
               )
             | P.Black, false -> (
-                match check b 1 i 1 2 || check b 2 i 1 2, check b 1 i 2 2 || check b 2 i 2 2 with
+                match check b 1 i 1 2 || check b 2 i 1 2, 
+                      check b 1 i 2 2 || check b 2 i 2 2 with
                 | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
                 | true, false -> checkboard (i+1) (i+1::lst1) lst2
                 | false, true -> checkboard (i+1) lst1 (i+1::lst2)
                 | false, false -> checkboard (i+1) lst1 lst2
               )
             | P.Red, true -> (
-                match check b 1 i 1 1 || check b 2 i 1 1 || check b 3 i 1 1 || check b 4 i 1 1
-                    , check b 1 i 2 1 || check b 2 i 2 1 || check b 3 i 2 1 || check b 4 i 2 1 with
+                match check b 1 i 1 1 || check b 2 i 1 1 ||
+                      check b 3 i 1 1 || check b 4 i 1 1, 
+                      check b 1 i 2 1 || check b 2 i 2 1 || 
+                      check b 3 i 2 1 || check b 4 i 2 1 with
                 | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
                 | true, false -> checkboard (i+1) (i+1::lst1) lst2
                 | false, true -> checkboard (i+1) lst1 (i+1::lst2)
                 | false, false -> checkboard (i+1) lst1 lst2
               )
             | P.Black, true -> (
-                match check b 1 i 1 2 || check b 2 i 1 2 || check b 3 i 1 2 || check b 4 i 1 2
-                    , check b 1 i 2 2 || check b 2 i 2 2 || check b 3 i 2 2 || check b 4 i 2 2 with
+                match check b 1 i 1 2 || check b 2 i 1 2 ||
+                      check b 3 i 1 2 || check b 4 i 1 2, 
+                      check b 1 i 2 2 || check b 2 i 2 2 || 
+                      check b 3 i 2 2 || check b 4 i 2 2 with
                 | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
                 | true, false -> checkboard (i+1) (i+1::lst1) lst2
                 | false, true -> checkboard (i+1) lst1 (i+1::lst2)
@@ -226,10 +238,18 @@ module Board= struct
         | P.Black -> 2
       ) in
       match (p2 - p1) with
-      | i when i = - !rows - 1 -> if (side = 1 && P.is_king p = false) then false else check b 1 (p1 - 1) 1 side
-      | i when i = - !rows + 1 -> if (side = 1 && P.is_king p = false) then false else check b 2 (p1 - 1) 1 side
-      | i when i = !rows + 1 -> if (side = 2 && P.is_king p = false) then false else check b 3 (p1 - 1) 1 side
-      | i when i = !rows - 1 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 1 side
+      | i when i = - !rows - 1 -> 
+        if (side = 1 && P.is_king p = false) then false else
+          check b 1 (p1 - 1) 1 side
+      | i when i = - !rows + 1 -> 
+        if (side = 1 && P.is_king p = false) then false else 
+          check b 2 (p1 - 1) 1 side
+      | i when i = !rows + 1 -> 
+        if (side = 2 && P.is_king p = false) then false else
+          check b 3 (p1 - 1) 1 side
+      | i when i = !rows - 1 -> 
+        if (side = 2 && P.is_king p = false) then false else 
+          check b 4 (p1 - 1) 1 side
       | _ -> false
 
   (* p1 p2 are DISPLAY POSITION*)
@@ -242,10 +262,18 @@ module Board= struct
         | P.Black -> 2
       ) in
       match (p2 - p1) with
-      | i when i = - 2 * !rows - 2 -> if (side = 1 && P.is_king p = false) then false else check b 1 (p1 - 1) 2 side
-      | i when i = - 2 * !rows + 2 -> if (side = 1 && P.is_king p = false) then false else check b 2 (p1 - 1) 2 side
-      | i when i = 2 * !rows + 2 -> if (side = 2 && P.is_king p = false) then false else check b 3 (p1 - 1) 2 side
-      | i when i = 2 * !rows - 2 -> if (side = 2 && P.is_king p = false) then false else check b 4 (p1 - 1) 2 side
+      | i when i = - 2 * !rows - 2 -> 
+        if (side = 1 && P.is_king p = false) then false else 
+          check b 1 (p1 - 1) 2 side
+      | i when i = - 2 * !rows + 2 -> 
+        if (side = 1 && P.is_king p = false) then false else 
+          check b 2 (p1 - 1) 2 side
+      | i when i = 2 * !rows + 2 -> 
+        if (side = 2 && P.is_king p = false) then false else
+          check b 3 (p1 - 1) 2 side
+      | i when i = 2 * !rows - 2 -> 
+        if (side = 2 && P.is_king p = false) then false else
+          check b 4 (p1 - 1) 2 side
       | _ -> false
 
   (* p1 p2 are DISPLAY POSITION*)
@@ -261,10 +289,12 @@ module Board= struct
       match b.(p1) with
       | None -> failwith "???"
       | Some p ->
-        if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) || (p2 / !rows = 0 && P.side_of p = P.Black) then
+        if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) ||
+           (p2 / !rows = 0 && P.side_of p = P.Black) then
           (b.(p2) <- Some (P.create (P.side_of p) true); b.(p1) <- None;)
         else (b.(p2) <- b.(p1); b.(p1) <- None;)
-    ) else (print_string "invalid move ";print_int p1; print_string " "; print_int p2;())
+    ) else (print_string "invalid move ";print_int p1; print_string " "; 
+            print_int p2;())
 
   (* p1 p2 are DISPLAY POSITION*)
   let jump b p1 p2 =
@@ -278,10 +308,13 @@ module Board= struct
       match b.(p1) with
       | None -> failwith "???"
       | Some p ->
-        if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) || (p2 / !rows = 0 && P.side_of p = P.Black) then
-          (b.(p2) <- Some (P.create (P.side_of p) true); b.((p1+p2)/2) <- None;b.(p1) <- None;)
+        if (p2 / !rows = !rows - 1 && P.side_of p = P.Red) ||
+           (p2 / !rows = 0 && P.side_of p = P.Black) then
+          (b.(p2) <- Some (P.create (P.side_of p) true);
+           b.((p1+p2)/2) <- None;b.(p1) <- None;)
         else (b.(p2) <- b.(p1); b.((p1+p2)/2) <- None;b.(p1) <- None;)
-    else (print_string "invalid jump ";print_int p1; print_string " "; print_int p2;())
+    else (print_string "invalid jump ";print_int p1; print_string " ";
+          print_int p2;())
 
   let current_turn b =
     match b.(!rows * !rows) with
