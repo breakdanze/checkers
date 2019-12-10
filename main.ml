@@ -108,8 +108,8 @@ let eval_move board move_phrase =
          Board.change_turn board;
          ("", board))          else ("Invalid move. Please try again. ",
                                      board)
-    else ((draw_string "The chosen piece has no available moves. Please try again. ");
-          ("", board))
+    else ("The chosen piece has no available moves. Please try again. "
+         , board)
 
 let within_rect status x y w h =
   x < status.mouse_x && status.mouse_x < x+w &&
@@ -211,7 +211,6 @@ let play_game (mode:string) : unit=
 let main () =
   open_graph " 600x600";
   (*set_text_size 30;*)
-  set_font "-*-fixed-medium-r-semicondensed--20-*-*-*-*-*-iso8859-1";
   draw_string "Welcome to checkers.";
   set_color (rgb 170 170 170);
   fill_rect 150 375 300 150;

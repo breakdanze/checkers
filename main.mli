@@ -1,3 +1,5 @@
+val to_letter : int -> char
+
 (** 
    The main entry point for the game interface. Since none of the other
    files require any of the information that this file holds as of right

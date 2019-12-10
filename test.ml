@@ -4,6 +4,22 @@ open Main
 open Command
 (* open Ai*)
 
+(** [pp_string s] pretty-prints string [s]. *)
+let pp_string s = "\"" ^ s ^ "\""
+
+(** [pp_list pp_elt lst] pretty-prints list [lst], using [pp_elt]
+    to pretty-print each element of [lst]. *)
+let pp_list pp_elt lst =
+  let pp_elts lst =
+    let rec loop n acc = function
+      | [] -> acc
+      | [h] -> acc ^ pp_elt h
+      | h1::(h2::t as t') ->
+        if n=100 then acc ^ "..."  (* stop printing long list *)
+        else loop (n+1) (acc ^ (pp_elt h1) ^ "; ") t'
+    in loop 0 "" lst
+  in "[" ^ pp_elts lst ^ "]"
+
 let board = Board.init 8;;
 let board_init = board;;
 let board_basic = eval_move board ["a3";"d4"];;
@@ -26,7 +42,37 @@ let board_tests = [
   "init" >:: (fun _ -> assert_equal (Board.to_list (snd board_basic)) (list_basic))
 ]
 
-let main_tests = []
+let main_tests = [
+  "to_letter" >:: (fun _ -> assert_equal (to_letter 0) 'a');
+  "eval_move" >:: (fun _ -> assert_equal (eval_move board ["g9"; "h5"])
+                      ("Invalid coordinates. Please try again. ", board));
+  "eval_move correct opening" >:: (fun _ ->
+      assert_equal
+        (eval_move board ["c3"; "d4"] |> snd |> Board.to_list |> List.map snd) 
+        ["Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";
+         "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space";
+         "Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";
+         "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space";
+         "Space"; "Space"; "Space"; "Black"; "Space"; "Space"; "Space"; "Space";
+         "Black"; "Space"; "Space"; "Space"; "Black"; "Space"; "Black"; "Space";
+         "Space"; "Black"; "Space"; "Black"; "Space"; "Black"; "Space"; "Black";
+         "Black"; "Space"; "Black"; "Space"; "Black"; "Space"; "Black"; "Space";
+         "Current turn is Red"]
+        ~printer:(pp_list pp_string));
+  "eval_move correct response" >:: (fun _ ->
+      assert_equal (eval_move (eval_move board ["c3"; "d4"] |> snd) ["f6"; "e5"]
+                    |> snd |> Board.to_list |> List.map snd) 
+        ["Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";
+         "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space";
+         "Space"; "Red";   "Space"; "Red";   "Space"; "Space"; "Space"; "Red";
+         "Space"; "Space"; "Space"; "Space"; "Red";   "Space"; "Space"; "Space";
+         "Space"; "Space"; "Space"; "Black"; "Space"; "Space"; "Space"; "Space";
+         "Black"; "Space"; "Space"; "Space"; "Black"; "Space"; "Black"; "Space";
+         "Space"; "Black"; "Space"; "Black"; "Space"; "Black"; "Space"; "Black";
+         "Black"; "Space"; "Black"; "Space"; "Black"; "Space"; "Black"; "Space";
+         "Current turn is Black"]
+        ~printer:(pp_list pp_string));
+]
 
 let command_tests = []
 
