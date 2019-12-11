@@ -50,7 +50,8 @@ let first_move =
    "Current turn is Red"]
 
 let board_tests = [
-  "init" >:: (fun _ -> assert_equal (Board.to_list (snd board_basic)) (list_basic))
+  "init" >::
+  (fun _ -> assert_equal (Board.to_list (snd board_basic)) (list_basic))
 ]
 
 let main_tests = [
@@ -67,7 +68,7 @@ let main_tests = [
         ["Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";
          "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space";
          "Space"; "Red";   "Space"; "Red";   "Space"; "Red"; "Space"; "Red";
-         "Space"; "Space"; "Space"; "Space"; "Space";   "Space"; "Space"; "Space";
+         "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space";
          "Space"; "Space"; "Space"; "Black"; "Space"; "Space"; "Space"; "Space";
          "Black"; "Space"; "Space"; "Space"; "Black"; "Space"; "Black"; "Space";
          "Space"; "Black"; "Space"; "Black"; "Space"; "Black"; "Space"; "Black";
@@ -145,6 +146,29 @@ let main_tests = [
          "Current turn is Black"]
         ~printer:(pp_list pp_string));    
 
+  "coord_to_int e3 = 45" >::
+  (fun _ -> assert_equal (Some 45) (Main.coord_to_int "e3"));
+
+  "coord_to_int a8 = 1" >::
+  (fun _ -> assert_equal (Some 1) (Main.coord_to_int "a8"));
+
+  "coord_to_int a1 = 57" >::
+  (fun _ -> assert_equal (Some 57) (Main.coord_to_int "a1"));
+
+  "coord_to_int h1 = 64" >::
+  (fun _ -> assert_equal (Some 64) (Main.coord_to_int "h1"));
+
+  "coord_to_int h8 = 64" >::
+  (fun _ -> assert_equal (Some 8) (Main.coord_to_int "h8"));
+
+  "coord_to_int h9 = None" >::
+  (fun _ -> assert_equal None (Main.coord_to_int "h9"));
+
+  "coord_to_int `1 = None" >::
+  (fun _ -> assert_equal None (Main.coord_to_int "`1"));
+
+  "coord_to_int {1 = None" >::
+  (fun _ -> assert_equal None (Main.coord_to_int "{1"))
 ]
 
 let command_tests = []

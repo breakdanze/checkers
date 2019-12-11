@@ -79,10 +79,9 @@ let coord_to_int c =
       let column = (Char.code (String.get c 0) - 97) in 
       if column>7 || column<0 then (raise Malformed) else
         let row = (Char.code (String.get c 1) - 49) in 
-        if row>8 || row<0 then (raise Malformed) else 
+        if row>7 || row<0 then (raise Malformed) else 
           (column+(7-row)*8)+1
-    ) with Malformed -> ();
-    None
+    ) with Malformed -> None
 
 let eval_move board move_phrase = 
   let int_coord1 = (match (coord_to_int (List.nth move_phrase 0)) with 
@@ -198,7 +197,7 @@ let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit 
             not (List.mem (snd movement) (snd (Board.movable board))) 
            then (* TODO: fix multijump, make sure you can only multijump after a jump*)
              Board.change_turn board);
-             Unix.sleepf 0.5;
+          Unix.sleepf 0.5;
           change_state board mode difficulty ""
         )
       else 
@@ -272,4 +271,4 @@ let main () =
   done
 
 (* Execute the game engine. *)
-(*let () = main ()*)
+(* let () = main () *)

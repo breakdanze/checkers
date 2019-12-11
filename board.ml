@@ -180,53 +180,53 @@ module Board= struct
       )
     | _ -> failwith "What"
 
+  let rec match_identity p b i lst1 lst2 = 
+    match P.side_of p, P.is_king p with
+    | P.Red, false -> (
+        match check b 3 i 1 1 || check b 4 i 1 1, 
+              check b 3 i 2 1 || check b 4 i 2 1 with
+        | true, true -> checkboard b (i+1) (i+1::lst1) (i+1::lst2)
+        | true, false -> checkboard b (i+1) (i+1::lst1) lst2
+        | false, true -> checkboard b (i+1) lst1 (i+1::lst2)
+        | false, false -> checkboard b (i+1) lst1 lst2
+      )
+    | P.Black, false -> (
+        match check b 1 i 1 2 || check b 2 i 1 2, 
+              check b 1 i 2 2 || check b 2 i 2 2 with
+        | true, true -> checkboard b (i+1) (i+1::lst1) (i+1::lst2)
+        | true, false -> checkboard b (i+1) (i+1::lst1) lst2
+        | false, true -> checkboard b (i+1) lst1 (i+1::lst2)
+        | false, false -> checkboard b (i+1) lst1 lst2
+      )
+    | P.Red, true -> (
+        match check b 1 i 1 1 || check b 2 i 1 1 ||
+              check b 3 i 1 1 || check b 4 i 1 1, 
+              check b 1 i 2 1 || check b 2 i 2 1 || 
+              check b 3 i 2 1 || check b 4 i 2 1 with
+        | true, true -> checkboard b (i+1) (i+1::lst1) (i+1::lst2)
+        | true, false -> checkboard b (i+1) (i+1::lst1) lst2
+        | false, true -> checkboard b (i+1) lst1 (i+1::lst2)
+        | false, false -> checkboard b (i+1) lst1 lst2
+      )
+    | P.Black, true -> (
+        match check b 1 i 1 2 || check b 2 i 1 2 ||
+              check b 3 i 1 2 || check b 4 i 1 2, 
+              check b 1 i 2 2 || check b 2 i 2 2 || 
+              check b 3 i 2 2 || check b 4 i 2 2 with
+        | true, true -> checkboard b (i+1) (i+1::lst1) (i+1::lst2)
+        | true, false -> checkboard b (i+1) (i+1::lst1) lst2
+        | false, true -> checkboard b (i+1) lst1 (i+1::lst2)
+        | false, false -> checkboard b (i+1) lst1 lst2
+      )
+  and checkboard b i lst1 lst2= 
+    if i = !rows * !rows then (lst1, lst2) else
+      match b.(i) with
+      | None -> checkboard b (i+1) lst1 lst2
+      | Some p -> if (P.side_of (getState b (!rows * !rows)) = P.side_of p) then (
+          match_identity p b i lst1 lst2 )else checkboard b (i+1) lst1 lst2
 
-  let movable b = 
-    let rec checkboard i lst1 lst2= 
-      if i = !rows * !rows then (lst1, lst2) else
-        match b.(i) with
-        | None -> checkboard (i+1) lst1 lst2
-        | Some p -> if (P.side_of (getState b (!rows * !rows)) = P.side_of p) then (
-            match P.side_of p, P.is_king p with
-            | P.Red, false -> (
-                match check b 3 i 1 1 || check b 4 i 1 1, 
-                      check b 3 i 2 1 || check b 4 i 2 1 with
-                | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
-                | true, false -> checkboard (i+1) (i+1::lst1) lst2
-                | false, true -> checkboard (i+1) lst1 (i+1::lst2)
-                | false, false -> checkboard (i+1) lst1 lst2
-              )
-            | P.Black, false -> (
-                match check b 1 i 1 2 || check b 2 i 1 2, 
-                      check b 1 i 2 2 || check b 2 i 2 2 with
-                | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
-                | true, false -> checkboard (i+1) (i+1::lst1) lst2
-                | false, true -> checkboard (i+1) lst1 (i+1::lst2)
-                | false, false -> checkboard (i+1) lst1 lst2
-              )
-            | P.Red, true -> (
-                match check b 1 i 1 1 || check b 2 i 1 1 ||
-                      check b 3 i 1 1 || check b 4 i 1 1, 
-                      check b 1 i 2 1 || check b 2 i 2 1 || 
-                      check b 3 i 2 1 || check b 4 i 2 1 with
-                | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
-                | true, false -> checkboard (i+1) (i+1::lst1) lst2
-                | false, true -> checkboard (i+1) lst1 (i+1::lst2)
-                | false, false -> checkboard (i+1) lst1 lst2
-              )
-            | P.Black, true -> (
-                match check b 1 i 1 2 || check b 2 i 1 2 ||
-                      check b 3 i 1 2 || check b 4 i 1 2, 
-                      check b 1 i 2 2 || check b 2 i 2 2 || 
-                      check b 3 i 2 2 || check b 4 i 2 2 with
-                | true, true -> checkboard (i+1) (i+1::lst1) (i+1::lst2)
-                | true, false -> checkboard (i+1) (i+1::lst1) lst2
-                | false, true -> checkboard (i+1) lst1 (i+1::lst2)
-                | false, false -> checkboard (i+1) lst1 lst2
-              )
-          )else checkboard (i+1) lst1 lst2 in
-
-    checkboard 0 [] []
+  let movable b =
+    checkboard b 0 [] []
 
   (* p1 p2 are DISPLAY POSITIONS (starting on 1)*)
   let is_valid_move b p1 p2=
