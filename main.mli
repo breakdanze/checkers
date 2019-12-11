@@ -11,7 +11,11 @@ val to_letter : int -> char
     possible error message and the board after (potentially) making a move.*)
 val eval_move : Board.Board.t -> string list -> string * Board.Board.t
 
-(** Converts a coordinate (e.g. h8) corresponding to that coordinate's number if
-    each square were assigned to the integers in ascending order from 1 to 64
-    going from left-to-right, top-to-bottom.*)
+(** Converts a coordinate (e.g. ["h8"]) corresponding to that coordinate's
+    number if each square were assigned to the integers in ascending order from
+    1 to 64 going from left-to-right, top-to-bottom.*)
 val coord_to_int : string -> int option
+
+(** Forms a command out of two coordinate strings (e.g. ["c3"] and ["d4"]) to be
+    interpreted by the Command module.*)
+val command_of_coords : string-> string -> string

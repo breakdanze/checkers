@@ -134,9 +134,7 @@ let coord_of_status status =
   ^(status.mouse_y |> y_coord_of_point |> string_of_int)
 
 let command_of_coords p1 p2 =
-  if p1 = "help" || p2 = "help" then "help" else
-  if p1 = "quit" || p2 = "quit" then "quit" else
-    "move "^p1^" "^p2 
+  "move "^p1^" "^p2 
 
 let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit =
   let _ = display2 board in 
@@ -271,4 +269,4 @@ let main () =
   done
 
 (* Execute the game engine. *)
-let () = main ()
+(* let () = main () *)

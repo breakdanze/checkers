@@ -168,7 +168,10 @@ let main_tests = [
   (fun _ -> assert_equal None (Main.coord_to_int "`1"));
 
   "coord_to_int {1 = None" >::
-  (fun _ -> assert_equal None (Main.coord_to_int "{1"))
+  (fun _ -> assert_equal None (Main.coord_to_int "{1"));
+
+  "command_of_coords c3 d4 = \"move c3 d4\"" >::
+  (fun _ -> assert_equal "move c3 d4" (Main.command_of_coords "c3" "d4"));
 ]
 
 let command_tests = []
