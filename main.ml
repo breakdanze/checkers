@@ -139,7 +139,7 @@ let command_of_coords p1 p2 =
   if p1 = "quit" || p2 = "quit" then "quit" else
     "move "^p1^" "^p2 
 
-let rec change_state (board:Board.t) (mode) (message:string): unit =
+let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit =
   let _ = display2 board in 
   if (Board.win board) then (
     moveto 0 30;
@@ -170,7 +170,7 @@ let rec change_state (board:Board.t) (mode) (message:string): unit =
       moveto 0 0;
       draw_string message;
       if 
-        (String.equal mode "1p") && (String.equal (Board.current_turn board) "Red")
+        (String.equal mode "1p") && (* difficulty = 1 && *)(String.equal (Board.current_turn board) "Red")
       then 
         (
           let movement = Ai.make_move 1 board in
@@ -182,8 +182,24 @@ let rec change_state (board:Board.t) (mode) (message:string): unit =
             not (List.mem (snd movement) (snd (Board.movable board))) 
            then (* TODO: fix multijump, make sure you can only multijump after a jump*)
              Board.change_turn board);
-          Unix.sleepf 0.5;
-          change_state board mode ""
+          change_state board mode difficulty ""
+        )
+      else 
+      if 
+        (String.equal mode "1p") && (* difficulty = 2 && *) (String.equal (Board.current_turn board) "Red")
+      then 
+        (
+          let movement = Ai.make_move 2 board in
+          let action = if 
+            Board.is_valid_move board ((fst movement)+1) ((snd movement)+1) 
+            then Board.move else Board.jump in
+          action board ((fst movement)+1) ((snd movement)+1);
+          (if 
+            not (List.mem (snd movement) (snd (Board.movable board))) 
+           then (* TODO: fix multijump, make sure you can only multijump after a jump*)
+             Board.change_turn board);
+             Unix.sleepf 0.5;
+          change_state board mode difficulty ""
         )
       else 
         try (
@@ -205,28 +221,28 @@ let rec change_state (board:Board.t) (mode) (message:string): unit =
           let input_parsed = parse user_input in 
           match input_parsed with 
           | Move move_phrase -> let pair = eval_move board move_phrase in
-            change_state (snd pair) mode (fst pair)
+            change_state (snd pair) mode difficulty (fst pair)
           | Quit -> (
               draw_string "Quitting... "; 
               exit 0 ) 
           | Help -> (
-              change_state board mode
+              change_state board mode difficulty 
                 "Click a checker and then a square you want to move it to. "
             )
 
         )
         with
         | Malformed -> (
-            change_state board mode "Malformed command. Try again. "
+            change_state board mode difficulty "Malformed command. Try again. "
           )
         | Empty -> ( 
-            change_state board mode "\n\nEmpty command. Try again. "
+            change_state board mode difficulty "\n\nEmpty command. Try again. "
           )
     )
 
-let play_game (mode:string) : unit= 
+let play_game (mode:string) (difficulty:int) : unit= 
   if (String.equal mode "1p" || String.equal mode "2p") then
-    change_state (Board.init  8) mode ""
+    change_state (Board.init  8) mode difficulty ""
   else print_endline "\nInvalid mode\n\n"
 
 let main () =
@@ -234,20 +250,25 @@ let main () =
   (*set_text_size 30;*)
   draw_string "Welcome to checkers.";
   set_color (rgb 170 170 170);
-  fill_rect 150 375 300 150;
-  fill_rect 150 150 300 150;
+  fill_rect 150 375 300 100;
+  fill_rect 150 150 300 100;
+  fill_rect 150 263 300 100;
   set_color (rgb 0 0 0);
-  moveto 150 450;
-  draw_string "Singleplayer";
-  moveto 150 225;
+  moveto 200 425;
+  draw_string "Singleplayer Level 1";
+  moveto 200 312;
+  draw_string "Singleplayer Level 2";
+  moveto 200 200;
   draw_string "Multiplayer";
   let no_good_click_yet = ref true in
   while !no_good_click_yet do
     let status = wait_next_event [Button_down] in
-    if (within_rect status 150 375 300 150) then 
-      let () = no_good_click_yet := false in play_game "1p"; else
-    if (within_rect status 150 150 300 150) then
-      let () = no_good_click_yet := false in play_game "2p"
+    if (within_rect status 150 375 300 100) then 
+      let () = no_good_click_yet := false in play_game "1p" 1; else
+    if (within_rect status 150 263 300 100) then
+      let () = no_good_click_yet := false in play_game "1p" 2; else
+    if (within_rect status 150 150 300 100) then
+      let () = no_good_click_yet := false in play_game "2p" 2
   done
 
 (* Execute the game engine. *)

@@ -38,7 +38,16 @@ let list_basic =
    (57, "Black"); (58, "Space"); (59, "Black"); (60, "Space"); (61, "Black");
    (62, "Space"); (63, "Black"); (64, "Space"); (0, "Current turn is Black")]
 
-
+let first_move = 
+  ["Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";
+   "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space";
+   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";
+   "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space";
+   "Space"; "Space"; "Space"; "Black"; "Space"; "Space"; "Space"; "Space";
+   "Black"; "Space"; "Space"; "Space"; "Black"; "Space"; "Black"; "Space";
+   "Space"; "Black"; "Space"; "Black"; "Space"; "Black"; "Space"; "Black";
+   "Black"; "Space"; "Black"; "Space"; "Black"; "Space"; "Black"; "Space";
+   "Current turn is Red"]
 
 let board_tests = [
   "init" >:: (fun _ -> assert_equal (Board.to_list (snd board_basic)) (list_basic))
@@ -57,8 +66,8 @@ let main_tests = [
          |> snd |> Board.to_list |> List.map snd) 
         ["Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";
          "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space";
-         "Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";
-         "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space";
+         "Space"; "Red";   "Space"; "Red";   "Space"; "Red"; "Space"; "Red";
+         "Space"; "Space"; "Space"; "Space"; "Space";   "Space"; "Space"; "Space";
          "Space"; "Space"; "Space"; "Black"; "Space"; "Space"; "Space"; "Space";
          "Black"; "Space"; "Space"; "Space"; "Black"; "Space"; "Black"; "Space";
          "Space"; "Black"; "Space"; "Black"; "Space"; "Black"; "Space"; "Black";
