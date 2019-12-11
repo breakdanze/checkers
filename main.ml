@@ -143,16 +143,6 @@ let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit
     moveto 0 30;
     set_text_size 10;
     draw_string (Board.current_turn board^" wins!");
-    (*set_color (rgb 170 170 170);
-      fill_rect 0 20 50 10;
-      moveto 0 20;
-      set_color (rgb 0 0 0);
-      draw_string "Restart ";
-      set_color (rgb 170 170 170);
-      fill_rect 50 20 50 10;
-      moveto 50 20;
-      set_color (rgb 0 0 0);
-      draw_string "Quit ";*)
     let no_good_click_yet = ref true in
     while !no_good_click_yet do
       let status = wait_next_event [Button_up] in
@@ -168,7 +158,7 @@ let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit
       moveto 0 0;
       draw_string message;
       if 
-        (String.equal mode "1p") && (* difficulty = 1 && *)
+        (String.equal mode "1p") && difficulty = 1 &&
         (String.equal (Board.current_turn board) "Red")
       then 
         (
@@ -179,14 +169,12 @@ let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit
           action board ((fst movement)+1) ((snd movement)+1);
           (if 
             not (List.mem (snd movement) (snd (Board.movable board))) 
-           then (* TODO: fix multijump, make sure you can only multijump after a
-                   jump*)
-             Board.change_turn board);
+           then Board.change_turn board);
           change_state board mode difficulty ""
         )
       else 
       if 
-        (String.equal mode "1p") && (* difficulty = 2 && *)
+        (String.equal mode "1p") && difficulty = 2 && 
         (String.equal (Board.current_turn board) "Red")
       then 
         (
@@ -197,9 +185,7 @@ let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit
           action board ((fst movement)+1) ((snd movement)+1);
           (if 
             not (List.mem (snd movement) (snd (Board.movable board))) 
-           then (* TODO: fix multijump, make sure you can only multijump after a
-                   jump*)
-             Board.change_turn board);
+           then  Board.change_turn board);
           Unix.sleepf 0.5;
           change_state board mode difficulty ""
         )
@@ -274,4 +260,4 @@ let main () =
   done
 
 (* Execute the game engine. *)
-(* let () = main () *)
+let () = main ()
