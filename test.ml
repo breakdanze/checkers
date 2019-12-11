@@ -109,6 +109,33 @@ let main_tests = [
          "Current turn is Red"]
         ~printer:(pp_list pp_string));      
 
+  "eval_move multijump" >:: (fun _ ->
+      assert_equal 
+        (Main.eval_move
+           (Main.eval_move
+              (Main.eval_move 
+                 (Main.eval_move 
+                    (Main.eval_move 
+                       (Main.eval_move 
+                          (Main.eval_move (Board.init 8) 
+                             ["e3"; "d4"] |> snd) 
+                          ["h6"; "g5"] |> snd) 
+                       ["f2";"e3"] |> snd)
+                    ["g5";"h4"] |> snd) 
+                 ["d4";"c5"] |> snd) 
+              ["b6";"d4"] |> snd) 
+           ["d4";"f2"] |> snd |> Board.to_list |> List.map snd) 
+        ["Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";
+         "Red";   "Space"; "Red";   "Space"; "Red";   "Space"; "Red";   "Space";
+         "Space"; "Space"; "Space"; "Red";   "Space"; "Red";   "Space"; "Space";
+         "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space";
+         "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Space"; "Red";
+         "Black"; "Space"; "Black"; "Space"; "Space"; "Space"; "Black"; "Space";
+         "Space"; "Black"; "Space"; "Black"; "Space"; "Red";   "Space"; "Black";
+         "Black"; "Space"; "Black"; "Space"; "Black"; "Space"; "Black"; "Space";
+         "Current turn is Black"]
+        ~printer:(pp_list pp_string));    
+
 ]
 
 let command_tests = []
