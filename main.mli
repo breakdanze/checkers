@@ -7,3 +7,5 @@ val to_letter : int -> char
    exposes info in main.ml should be prescribed here.
 *)
 val eval_move : Board.Board.t -> string list -> string * Board.Board.t
+
+val coord_to_int : string -> int option
