@@ -1,11 +1,17 @@
+(** 
+   The main entry point for the game interface.
+*)
+
+(** Converts an integer from 0 to 7 to a letter from a to h. For use in creating
+    letters in coordinates. *)
 val to_letter : int -> char
 
-(** 
-   The main entry point for the game interface. Since none of the other
-   files require any of the information that this file holds as of right
-   now, this file is left empty. If at some point this changes, code that
-   exposes info in main.ml should be prescribed here.
-*)
+(** Takes in a board and a list of coordinates for a potential move. Makes the
+    move if it is a valid move. Evaluates to a tuple of a string containing a
+    possible error message and the board after (potentially) making a move.*)
 val eval_move : Board.Board.t -> string list -> string * Board.Board.t
 
+(** Converts a coordinate (e.g. h8) corresponding to that coordinate's number if
+    each square were assigned to the integers in ascending order from 1 to 64
+    going from left-to-right, top-to-bottom.*)
 val coord_to_int : string -> int option
