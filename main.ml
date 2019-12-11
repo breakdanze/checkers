@@ -251,4 +251,4 @@ let main () =
   done
 
 (* Execute the game engine. *)
-let () = main ()
+(*let () = main ()*)
