@@ -34,20 +34,20 @@ module type BoardSig = sig
   (** [to_list b] is the list representation of [b].*)
   val to_list: t -> (int * string) list
 
-  (** [check b d p s side] is true iff [p] with side [side] is possible to be moved towards [d] in
-      [s] steps.*)
+  (** [check b d p s side] is true iff [p] with side [side] is possible to be
+      moved towards [d] in [s] steps.*)
   val check: t -> int -> int -> int -> int -> bool
 
-  (** [movable b] is the list containing two lists, one for movable positions on board [b],
-      the other for jumpable list.*)
+  (** [movable b] is the list containing two lists, one for movable positions on
+      board [b], the other for jumpable list.*)
   val movable: t -> int list * int list
 
-  (** [is_valid_move b pos1 pos2] is true iff [pos2] is a valid move of the piece at 
-      [pos1] on board [b].*)
+  (** [is_valid_move b pos1 pos2] is true iff [pos2] is a valid move of the
+      piece at [pos1] on board [b].*)
   val is_valid_move: t -> int -> int -> bool
 
-  (** [is_valid_jump b pos1 pos2] is true iff [pos2] is a valid jump of the piece at 
-      [pos1] on board [b].*)
+  (** [is_valid_jump b pos1 pos2] is true iff [pos2] is a valid jump of the
+      piece at [pos1] on board [b].*)
   val is_valid_jump: t -> int -> int -> bool
 
   (** [move pos1 pos2] moves the piece at [pos1] to [pos2] on board [b].*)

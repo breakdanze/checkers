@@ -54,8 +54,8 @@ module Board= struct
   let rows = ref 8
 
   (** [initPieces a i num1 num2 num3] initializes [a] with pieces in original 
-      locations starting at [i] and black side before [num1] rows and red side from
-      [num2] + 1 row to [num3] row on a board of [row3] * [col].*)
+      locations starting at [i] and black side before [num1] rows and red side
+      from [num2] + 1 row to [num3] row on a board of [row3] * [col].*)
   let rec initPieces a i num1 num2 num3 col= 
     if i < num1 * col then 
       match (i / col) mod 2 with
@@ -68,9 +68,11 @@ module Board= struct
       (a.(i) <- None; initPieces a (i+1) num1 num2 num3 col)
     else if i >= num2 * col && i < num3 * col then
       match (i / col) mod 2 with
-      | 0 -> a.(i) <- (if i mod 2 = 0 then None else Some (P.create Black false));
+      | 0 -> a.(i) <- (if i mod 2 = 0 then None else
+                         Some (P.create Black false));
         initPieces a (i+1) num1 num2 num3 col
-      | 1 -> a.(i) <- (if i mod 2 = 1 then None else Some (P.create Black false));
+      | 1 -> a.(i) <- (if i mod 2 = 1 then None else
+                         Some (P.create Black false));
         initPieces a (i+1) num1 num2 num3 col
       | _ -> failwith "How could int mod 2 be greater than 2?"
     else if i = num3 * col then (a.(i) <- Some (P.create Black false);a)
@@ -89,8 +91,8 @@ module Board= struct
         | Some p -> (match P.side_of p with
             |Red -> toList b (i+1) r 
                       ((i+1, if P.is_king p then "Red King" else "Red") :: acc)
-            |Black -> toList b (i+1) r 
-                        ((i+1,if P.is_king p then "Black King"else "Black")::acc)
+            |Black -> toList b (i+1) r ((i+1,if P.is_king p then
+                                           "Black King" else "Black")::acc)
           ) else 
         match b.(r*r) with
         |None -> (0, "WTF") ::acc
@@ -222,8 +224,8 @@ module Board= struct
     if i = !rows * !rows then (lst1, lst2) else
       match b.(i) with
       | None -> checkboard b (i+1) lst1 lst2
-      | Some p -> if (P.side_of (getState b (!rows * !rows)) = P.side_of p) then (
-          match_identity p b i lst1 lst2 )else checkboard b (i+1) lst1 lst2
+      | Some p -> if P.side_of (getState b (!rows * !rows)) = P.side_of p then
+          match_identity p b i lst1 lst2 else checkboard b (i+1) lst1 lst2
 
   let movable b =
     checkboard b 0 [] []

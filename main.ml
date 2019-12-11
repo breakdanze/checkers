@@ -67,7 +67,8 @@ let display2 b =
   set_color (rgb 170 170 170); fill_rect 300 10 140 50; fill_rect 450 10 150 50;
   set_color (rgb 0 0 0); moveto 325 35; draw_string "Help";
   moveto 475 35; draw_string "Quit";
-  for x = 0 to 7 do moveto 530 (120+60*x); draw_string (string_of_int (x+1)) done;
+  for x = 0 to 7 do
+    moveto 530 (120+60*x); draw_string (string_of_int (x+1)) done;
   for x = 0 to 7 do moveto (60+60*x) 60; draw_char (to_letter x) done;
   let rec draw_lst b n = match b with
     | h::t -> draw_checker h; draw_lst t n-1
@@ -136,8 +137,8 @@ let coord_of_status status =
 let command_of_coords p1 p2 =
   "move "^p1^" "^p2 
 
-let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit =
-  let _ = display2 board in 
+let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit
+  = let _ = display2 board in 
   if (Board.win board) then (
     moveto 0 30;
     set_text_size 10;
@@ -167,7 +168,8 @@ let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit 
       moveto 0 0;
       draw_string message;
       if 
-        (String.equal mode "1p") && (* difficulty = 1 && *)(String.equal (Board.current_turn board) "Red")
+        (String.equal mode "1p") && (* difficulty = 1 && *)
+        (String.equal (Board.current_turn board) "Red")
       then 
         (
           let movement = Ai.make_move 1 board in
@@ -177,13 +179,15 @@ let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit 
           action board ((fst movement)+1) ((snd movement)+1);
           (if 
             not (List.mem (snd movement) (snd (Board.movable board))) 
-           then (* TODO: fix multijump, make sure you can only multijump after a jump*)
+           then (* TODO: fix multijump, make sure you can only multijump after a
+                   jump*)
              Board.change_turn board);
           change_state board mode difficulty ""
         )
       else 
       if 
-        (String.equal mode "1p") && (* difficulty = 2 && *) (String.equal (Board.current_turn board) "Red")
+        (String.equal mode "1p") && (* difficulty = 2 && *)
+        (String.equal (Board.current_turn board) "Red")
       then 
         (
           let movement = Ai.make_move 2 board in
@@ -193,7 +197,8 @@ let rec change_state (board:Board.t) (mode) (difficulty) (message:string): unit 
           action board ((fst movement)+1) ((snd movement)+1);
           (if 
             not (List.mem (snd movement) (snd (Board.movable board))) 
-           then (* TODO: fix multijump, make sure you can only multijump after a jump*)
+           then (* TODO: fix multijump, make sure you can only multijump after a
+                   jump*)
              Board.change_turn board);
           Unix.sleepf 0.5;
           change_state board mode difficulty ""
